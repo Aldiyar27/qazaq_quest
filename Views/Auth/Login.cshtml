@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Вход";
+}
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#f6b483,#3d8b6e);
+  font-family:'Archivo',sans-serif;
+}
+
+.card{
+  background:#fff;
+  padding:3.5rem 3rem;
+  border-radius:2.5rem;
+  max-width:420px;
+  width:100%;
+  text-align:center;
+  box-shadow:0 25px 50px rgba(0,0,0,.2);
+}
+
+h1{
+  font-family:'Clash Display',sans-serif;
+  font-size:2.6rem;
+  margin-bottom:.5rem;
+  color:#2b5e4b;
+}
+
+p{color:#9c6a46;margin-bottom:2rem}
+
+input{
+  width:100%;
+  padding:1rem 1.2rem;
+  border-radius:1rem;
+  border:1px solid #f0c8a8;
+  margin-bottom:1.2rem;
+  font-size:1rem;
+}
+
+button{
+  width:100%;
+  padding:1rem;
+  border:none;
+  border-radius:2rem;
+  background:#f07c4a;
+  color:#fff;
+  font-size:1.1rem;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 15px 25px rgba(240,124,74,.35);
+}
+
+a{
+  display:inline-block;
+  margin-top:1.5rem;
+  color:#2b5e4b;
+  text-decoration:none;
+  font-weight:600;
+}
+</style>
+
+<form method="post" action="/Auth/Login">
+    <div class="card">
+        <h1>Вход</h1>
+        <p>С возвращением в Qazaq Quest</p>
+
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+
+        <button type="submit">Войти</button>
+
+        <a href="/Auth/Register">Нет аккаунта? Зарегистрироваться</a>
+    </div>
+</form>

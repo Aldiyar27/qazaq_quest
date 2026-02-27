@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "qazaq_quest/1.0.0": {
+        "runtime": {
+          "qazaq_quest.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "qazaq_quest/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

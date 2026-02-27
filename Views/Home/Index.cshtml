@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qazaq Quest · Астана в кадрах</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Clash+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fdfaf3;
+      font-family: 'Archivo', sans-serif;
+      color: #2e443a;
+      line-height: 1.5;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ----- навбар ----- */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 3rem;
+      background: rgba(255, 250, 240, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(239, 150, 84, 0.2);
+    }
+
+    .logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2b5e4b;
+    }
+    .logo span {
+      background: linear-gradient(145deg, #f07c4a, #ffa15e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      font-weight: 500;
+      color: #2f5445;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: #f07c4a;
+      transition: width 0.2s ease;
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-btn {
+      background: #f07c4a;
+      color: white;
+      border: none;
+      padding: 0.7rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: default;
+      box-shadow: 0 10px 20px -5px rgba(240, 124, 74, 0.4);
+    }
+
+    /* ----- HERO (уже с фото) ----- */
+    .hero {
+      height: 100vh;
+      min-height: 700px;
+      background: 
+        linear-gradient(125deg, rgba(244, 148, 68, 0.25) 0%, rgba(234, 105, 48, 0.2) 50%, rgba(56, 109, 86, 0.35) 100%),
+        url('photo/astana-bayterek.jpg');
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      padding: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 5rem;
+      line-height: 1;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 8px 20px rgba(160, 70, 20, 0.3);
+    }
+    .hero h1 span {
+      background: linear-gradient(120deg, #fff8, #fff0e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.4rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      opacity: 0.95;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn--primary {
+      background: #f07c4a;
+      border: none;
+      padding: 1rem 2.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 25px 35px -10px #f07c4a;
+      cursor: default;
+    }
+
+    .btn--outline {
+      background: transparent;
+      border: 2px solid rgba(255, 240, 210, 0.9);
+      padding: 1rem 2.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: white;
+      backdrop-filter: blur(6px);
+      cursor: default;
+    }
+
+    /* секции */
+    .section {
+      padding: 7rem 0;
+      border-bottom: 1px solid #f0dfcf;
+    }
+
+    .section__title {
+      font-size: 3.2rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #286b53, #3d8b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .section__sub {
+      color: #b26b42;
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin-bottom: 3rem;
+      font-weight: 400;
+    }
+
+    /* сетка с фото-карточками (фича + фото) */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: #fffef8;
+      border-radius: 2.8rem;
+      box-shadow: 0 25px 45px -18px rgba(212, 120, 62, 0.2);
+      border: 1px solid #ffd9bf;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 35px 55px -15px #f09d6b;
+    }
+
+    .feature-img {
+      height: 220px;
+      background-size: cover;
+      background-position: center;
+    }
+    /* разные фото для каждой карточки */
+    .img1 { background-image: url('photo/architecture-quest.jpg'); }
+    .img2 { background-image: url('photo/history-quest.jpg'); }
+    .img3 { background-image: url('photo/food-quest.jpg'); }
+
+    .feature-content {
+      padding: 2rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .feature-icon {
+      background: #fceae0;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -50px auto 1.2rem;
+      font-size: 2rem;
+      color: #f07c4a;
+      border: 4px solid white;
+    }
+    .feature-content h3 {
+      font-size: 2rem;
+      margin-bottom: 0.6rem;
+      color: #215a45;
+    }
+    .feature-content p {
+      color: #936e51;
+    }
+
+    /* ----- ПАРАЛЛАКС С ФОТО (уже есть) ----- */
+    .parallax-block {
+      background: linear-gradient(145deg, #e9965e, #c97c4b);
+      border-radius: 4rem;
+      padding: 5rem 4rem;
+      color: white;
+      margin: 3rem 0;
+      box-shadow: 0 40px 60px -15px #b95f2c;
+      position: relative;
+      overflow: hidden;
+    }
+    .parallax-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1610917040806-0e856b30d77d?q=80&w=1974&auto=format&fit=crop') center/cover;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .parallax-block h2 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .parallax-block p {
+      font-size: 1.25rem;
+      max-width: 600px;
+      opacity: 0.95;
+    }
+
+    /* ----- КВЕСТЫ С ФОТОГРАФИЯМИ ----- */
+    .quest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+    .quest-item {
+      background: #fffdf7;
+      border-radius: 3rem;
+      box-shadow: 0 18px 30px -8px rgba(204, 112, 52, 0.15);
+      border: 1px solid #ffe1c6;
+      overflow: hidden;
+      transition: 0.2s;
+    }
+    .quest-item:hover {
+      border-color: #f5a163;
+      transform: translateY(-6px);
+    }
+
+    .quest-img {
+      height: 240px;
+      background-size: cover;
+      background-position: center;
+    }
+    .qimg1 { background-image: url('https://images.unsplash.com/photo-1545291730-47abc1d25b05?q=80&w=1974&auto=format&fit=crop'); }
+    .qimg2 { background-image: url('https://images.unsplash.com/photo-1577086664693-894d8405334a?q=80&w=1974&auto=format&fit=crop'); }
+    .qimg3 { background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop'); }
+
+    .quest-content {
+      padding: 2rem 2rem 2.5rem;
+    }
+    .quest-item .tag {
+      color: #f07c4a;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .quest-item h3 {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      color: #2b624e;
+    }
+    .quest-item p {
+      color: #a4673f;
+      margin-bottom: 1.8rem;
+    }
+    .btn-ghost {
+      display: inline-block;
+      border: 1.8px solid #e17c4a;
+      padding: 0.7rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #e17c4a;
+      cursor: default;
+    }
+
+    /* ----- ШАГИ (без фото, но с иконками) ----- */
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 4rem 0;
+    }
+    .step {
+      flex: 1 1 180px;
+      background: #fffaf2;
+      padding: 2.5rem 2rem;
+      border-radius: 2.5rem;
+      border: 1px solid #fcdabb;
+      text-align: center;
+    }
+    .step .number {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 4rem;
+      font-weight: 700;
+      color: #fad6af;
+      line-height: 1;
+    }
+
+    /* ----- ПРИЗЫ И ПАРТНЁРЫ + ФОТО БЛОК ----- */
+    .prize-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+      margin: 3rem 0;
+    }
+    .chip {
+      background: #ffe7d6;
+      padding: 0.8rem 2.5rem;
+      border-radius: 60px;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #bb5d2b;
+      border: 1px solid #f5bc8f;
+    }
+
+    /* фото-галерея (мини сетка под призами) */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin: 4rem 0 2rem;
+    }
+    .photo {
+      height: 180px;
+      border-radius: 2.5rem;
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 15px 25px -12px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+    .photo:hover {
+      transform: scale(1.02);
+    }
+    .ph1 { background-image: url('https://images.unsplash.com/photo-1598977123118-4e30ba3a1dc7?q=80&w=1974&auto=format&fit=crop'); }
+    .ph2 { background-image: url('https://images.unsplash.com/photo-1589476993333-f55b84301219?q=80&w=1974&auto=format&fit=crop'); }
+    .ph3 { background-image: url('https://images.unsplash.com/photo-1644154907124-5d59d4d7d5a3?q=80&w=1974&auto=format&fit=crop'); }
+    .ph4 { background-image: url('https://images.unsplash.com/photo-1620902133695-6dff443dee3a?q=80&w=1974&auto=format&fit=crop'); }
+
+    /* футер */
+    .footer {
+      background: #1e4840;
+      color: #fff6e5;
+      border-radius: 4rem 4rem 0 0;
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+    .footer h2 {
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, #ffe5b4, #ffb882);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .store-btn {
+      background: rgba(255, 225, 190, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 200, 140, 0.4);
+      padding: 0.9rem 2.4rem;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: #fff4e0;
+      cursor: default;
+    }
+    .social-links {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2.5rem 0 1.8rem;
+      font-size: 1.8rem;
+      color: #fbe3b0;
+    }
+    .copyright {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: #ecccaa;
+    }
+    .fa-heart { color: #fda55a; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">Qazaq <span>Quest</span></div>
+    <div class="nav-links">
+      <a href="#">О нас</a>
+      <a href="#">Квесты</a>
+      <a href="#">Как это работает</a>
+      <a href="#">Контакты</a>
+    </div>
+    <a href="/Auth/Login" class="nav-btn">Войти</a>
+  </nav>
+
+  <!-- HERO (уже с фото) -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1><span>Астана в каждом</span><br>кадре</h1>
+      <p>Городские квесты, живые эмоции, настоящие призы. Твоё приключение начинается здесь.</p>
+      <div class="hero-buttons">
+        <span class="btn--primary">Начать игру</span>
+        <span class="btn--outline">Все квесты</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- преимущества с ФОТО (теперь у каждой карточки своё фото) -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">Почему мы другие</h2>
+      <div class="section__sub">Мы вдохнули жизнь в urban‑исследования.</div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-img img1"></div>
+          <div class="feature-content">
+            <div class="feature-icon"><i class="fas fa-archway"></i></div>
+            <h3>Живая история</h3>
+            <p>Байтерек, дворец и тайные уголки — каждый камень хранит легенду</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-img img2"></div>
+          <div class="feature-content">
+            <div class="feature-icon"><i class="fas fa-map-signs"></i></div>
+            <h3>Скрытые жемчужины</h3>
+            <p>Найди места, которых нет в обычных путеводителях</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-img img3"></div>
+          <div class="feature-content">
+            <div class="feature-icon"><i class="fas fa-gift"></i></div>
+            <h3>Призы каждый день</h3>
+            <p>Баллы, купоны, ужины в ресторанах — реальные награды</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- параллакс-блок (уже с полупрозрачным фото) -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="parallax-block">
+        <h2>Город как приключение</h2>
+        <p>Qazaq Quest превращает обычную прогулку в игру с элементами квеста, обучения и живого общения.</p>
+        <ul style="margin-top:2rem; list-style:none; display:flex; flex-wrap:wrap; gap:2rem;">
+          <li><i class="fas fa-check-circle"></i> 50+ локаций по всей Астане</li>
+          <li><i class="fas fa-check-circle"></i> реальные призы от партнёров</li>
+          <li><i class="fas fa-check-circle"></i> соревнуйся и побеждай</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- популярные квесты (каждый с отдельным фото) -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">Популярные квесты</h2>
+      <div class="section__sub">Выбери маршрут под своё настроение</div>
+      <div class="quest-grid">
+        <div class="quest-item">
+          <div class="quest-img qimg1"></div>
+          <div class="quest-content">
+            <div class="tag">СРЕДНИЙ · 2–3 ч</div>
+            <h3>Архитектурный променад</h3>
+            <p>Современная Астана: от пирамиды до небоскрёбов</p>
+            <span class="btn-ghost">Исследовать</span>
+          </div>
+        </div>
+        <div class="quest-item">
+          <div class="quest-img qimg2"></div>
+          <div class="quest-content">
+            <div class="tag">ЛЁГКИЙ · 1–2 ч</div>
+            <h3>Легенды степи</h3>
+            <p>Исторический квест по следам кочевников</p>
+            <span class="btn-ghost">Погрузиться</span>
+          </div>
+        </div>
+        <div class="quest-item">
+          <div class="quest-img qimg3"></div>
+          <div class="quest-content">
+            <div class="tag">СЛОЖНЫЙ · 3–4 ч</div>
+            <h3>Вкус Казахстана</h3>
+            <p>Гастрономическое приключение с дегустацией</p>
+            <span class="btn-ghost">Попробовать</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- как это работает (без новых фото, но внизу добавим фотогалерею) -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">Как это работает</h2>
+      <div class="section__sub">Три простых шага к новым эмоциям</div>
+      <div class="steps">
+        <div class="step">
+          <div class="number">1</div>
+          <h4>Выбирай квест</h4>
+          <p>Интерактивная карта с локациями и заданиями</p>
+        </div>
+        <div class="step">
+          <div class="number">2</div>
+          <h4>Выполняй задания</h4>
+          <p>Сканируй QR‑коды, отвечай, фотографируй</p>
+        </div>
+        <div class="step">
+          <div class="number">3</div>
+          <h4>Получай награды</h4>
+          <p>Баллы превращаются в реальные призы</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- призы + ФОТОГАЛЕРЕЯ (4 ярких фото Астаны) -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">Призы и награды</h2>
+      <div class="section__sub">Зарабатывай баллы и обменивай на подарки</div>
+      <div class="prize-chips">
+        <span class="chip">Рестораны</span>
+        <span class="chip">Развлечения</span>
+        <span class="chip">Магазины</span>
+        <span class="chip">Сервисы</span>
+      </div>
+
+      <!-- + 4 новых фото -->
+      <div class="photo-grid">
+        <div class="photo ph1"></div>
+        <div class="photo ph2"></div>
+        <div class="photo ph3"></div>
+        <div class="photo ph4"></div>
+      </div>
+
+      <div style="margin-top:3rem; background: #fff1e4; border-radius: 3.5rem; padding: 3rem; text-align: center;">
+        <h3 style="font-size:2rem; color:#b45729;">Готов начать приключение?</h3>
+        <p style="font-size:1.2rem; margin:1rem 0 2rem; color:#4f6b58;">Присоединяйся к сообществу исследователей Астаны</p>
+        <span class="btn--primary" style="background:#286b53; box-shadow: 0 20px 30px -8px #286b53;">Скачать приложение</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- футер -->
+  <footer class="footer">
+    <h2>Qazaq Quest</h2>
+    <p style="max-width:600px; margin:0 auto;">Присоединяйся к тысячам игроков. Скачай приложение и начни своё первое приключение сегодня!</p>
+    <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 2.5rem 0;">
+      <span class="store-btn"><i class="fab fa-apple"></i> Скачать для iOS</span>
+      <span class="store-btn"><i class="fab fa-google-play"></i> Скачать для Android</span>
+    </div>
+    <div style="margin-top:3rem;">Свяжитесь с нами для сотрудничества</div>
+    <div class="social-links">
+      <i class="fab fa-instagram"></i>
+      <i class="fab fa-telegram"></i>
+      <i class="fab fa-whatsapp"></i>
+      <i class="far fa-envelope"></i>
+    </div>
+    <hr style="width:250px; margin:2rem auto; border:none; height:1px; background:#bb8762;">
+    <div class="copyright">
+      <span>Qazaq Quest</span>
+      <span>© 2025 Qazaq Quest. Все права защищены. Сделано с <i class="fas fa-heart"></i></span>
+      <span><i class="fas fa-paint-brush"></i> Iconarchive</span>
+    </div>
+  </footer>
+</body>
+</html>
