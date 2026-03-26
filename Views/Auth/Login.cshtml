@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Вход";
 }
+<<<<<<< HEAD
 <style>
 *{box-sizing:border-box}
 body{
@@ -76,3 +77,32 @@ a{
         <a href="/Auth/Register">Нет аккаунта? Зарегистрироваться</a>
     </div>
 </form>
+=======
+
+<section class="auth-section">
+    <div class="auth-card panel auth-card-rich">
+        <div class="eyebrow">Добро пожаловать обратно</div>
+        <h1>Вход в Qazaq Quest</h1>
+        <p class="muted">Вход выполняется только по сохранённому аккаунту. Без входа квесты недоступны.</p>
+
+        <form method="post" asp-controller="Auth" asp-action="Login" class="auth-form">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button class="btn btn-primary auth-btn" type="submit">Войти</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-controller="Auth" asp-action="Register">Нет аккаунта? Зарегистрироваться</a>
+            <a asp-controller="Home" asp-action="Index">Вернуться на главную</a>
+        </div>
+    </div>
+</section>
+>>>>>>> d34208a (feature 2.0)

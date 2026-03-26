@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "/Users/aldiyar/qazaq_quest/qazaq_quest.csproj": {}
   },
   "projects": {
@@ -12,19 +13,41 @@
         "projectPath": "/Users/aldiyar/qazaq_quest/qazaq_quest.csproj",
         "packagesPath": "/Users/aldiyar/.nuget/packages/",
         "outputPath": "/Users/aldiyar/qazaq_quest/obj/",
+=======
+    "/Users/aldiyar/qazaq/qazaq_quest.csproj": {}
+  },
+  "projects": {
+    "/Users/aldiyar/qazaq/qazaq_quest.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/aldiyar/qazaq/qazaq_quest.csproj",
+        "projectName": "qazaq_quest",
+        "projectPath": "/Users/aldiyar/qazaq/qazaq_quest.csproj",
+        "packagesPath": "/Users/aldiyar/.nuget/packages/",
+        "outputPath": "/Users/aldiyar/qazaq/obj/",
+>>>>>>> d34208a (feature 2.0)
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/aldiyar/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
+<<<<<<< HEAD
           "net10.0"
+=======
+          "net8.0"
+>>>>>>> d34208a (feature 2.0)
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
+<<<<<<< HEAD
           "net10.0": {
             "targetAlias": "net10.0",
+=======
+          "net8.0": {
+            "targetAlias": "net8.0",
+>>>>>>> d34208a (feature 2.0)
             "projectReferences": {}
           }
         },
@@ -36,13 +59,22 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
+<<<<<<< HEAD
           "auditMode": "all"
+=======
+          "auditMode": "direct"
+>>>>>>> d34208a (feature 2.0)
         },
         "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
+<<<<<<< HEAD
         "net10.0": {
           "targetAlias": "net10.0",
+=======
+        "net8.0": {
+          "targetAlias": "net8.0",
+>>>>>>> d34208a (feature 2.0)
           "imports": [
             "net461",
             "net462",
@@ -62,6 +94,7 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< HEAD
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
@@ -477,6 +510,9 @@
             "System.Xml.XPath": "(,4.3.32767]",
             "System.Xml.XPath.XDocument": "(,5.0.32767]"
           }
+=======
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json"
+>>>>>>> d34208a (feature 2.0)
         }
       }
     }

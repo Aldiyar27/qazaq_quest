@@ -1,0 +1,40 @@
+@model QazaqQuest.Models.Quest
+
+<article class="quest-card">
+    <div class="quest-cover photo-cover" style="background:@Model.CoverStyle">
+        <img src="@Model.ImageUrl" alt="@Model.Title" class="quest-cover-image" />
+        <div class="quest-cover-overlay"></div>
+        <span class="quest-icon">@Model.Icon</span>
+        <div class="quest-cover-meta">
+            <span>@Model.City</span>
+            <span>@Model.Category</span>
+        </div>
+    </div>
+
+    <div class="quest-body">
+        <div class="inline-pills">
+            <span class="pill">@Model.Difficulty</span>
+            <span class="pill">@Model.Type</span>
+            <span class="pill">@Model.RouteLength</span>
+        </div>
+
+        <h3>@Model.Title</h3>
+        <p class="muted">@Model.Description</p>
+
+        <div class="quest-meta-grid">
+            <div>
+                <span class="meta-label">Длительность</span>
+                <strong>@Model.Duration</strong>
+            </div>
+            <div>
+                <span class="meta-label">Партнёр</span>
+                <strong>@Model.Partner</strong>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <span class="price-tag">@(Model.Price == 0 ? "Бесплатно" : $"{Model.Price} ₸")</span>
+            <a class="btn btn-primary" asp-controller="Quest" asp-action="Details" asp-route-id="@Model.Id">Открыть</a>
+        </div>
+    </div>
+</article>

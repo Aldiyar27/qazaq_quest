@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -637,3 +638,122 @@
   </footer>
 </body>
 </html>
+=======
+@model List<QazaqQuest.Models.Quest>
+@{
+    ViewData["Title"] = "Главная";
+    var featuredCities = (ViewBag.FeaturedCities as List<string>) ?? new List<string>();
+}
+
+<section class="hero-section">
+    <div class="container hero-grid">
+        <div class="hero-copy with-art">
+            <img class="hero-bg-art" src="~/photo/hero-astana.svg" alt="Astana hero" />
+            <div class="eyebrow">Квесты только по Астане</div>
+            <h1>Городские маршруты с <span class="text-gradient">фото-точками, GPS-проверкой и красивым интерфейсом</span></h1>
+            <p class="hero-text">
+                Теперь проект полностью сфокусирован на Астане: интересные квесты по Бәйтереку, EXPO, Jastar, Нуржолу, Ботаническому саду и набережной.
+                Участвовать можно только после регистрации, а каждое задание проходит через встроенную проверку ответа.
+            </p>
+
+            <div class="hero-actions">
+                <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Смотреть квесты</a>
+                <a class="btn btn-ghost" asp-controller="Auth" asp-action="Register">Зарегистрироваться</a>
+            </div>
+
+            <div class="city-tags">
+                @foreach (var city in featuredCities)
+                {
+                    <span class="city-tag">@city</span>
+                }
+                <span class="city-tag">Фото-задания</span>
+                <span class="city-tag">Пошаговая проверка</span>
+            </div>
+        </div>
+
+        <div class="hero-stack">
+            <div class="glass-card hero-panel-card">
+                <div class="hero-panel-top">
+                    <span class="hero-icon">🧩</span>
+                    <span class="pill pill-dark">Игрок идёт по шагам</span>
+                </div>
+                <h3>Как проходит квест</h3>
+                <ol class="steps-list">
+                    <li>Игрок регистрируется или входит</li>
+                    <li>Выбирает квест по Астане</li>
+                    <li>Подтверждает GPS на точке</li>
+                    <li>Выполняет и проверяет задание</li>
+                </ol>
+            </div>
+
+            <div class="hero-mini-grid">
+                <div class="mini-stat-card">
+                    <strong>@ViewBag.QuestCount</strong>
+                    <span>квестов</span>
+                </div>
+                <div class="mini-stat-card">
+                    <strong>@ViewBag.CityCount</strong>
+                    <span>город</span>
+                </div>
+                <div class="mini-stat-card">
+                    <strong>@ViewBag.RoutePointCount</strong>
+                    <span>GPS-точек</span>
+                </div>
+                <div class="mini-stat-card">
+                    <strong>@ViewBag.UserRole</strong>
+                    <span>твоя роль</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Что изменено</div>
+            <h2>Проект настроен ближе к техническому заданию</h2>
+        </div>
+    </div>
+
+    <div class="feature-check-grid">
+        <article class="check-card">
+            <span class="check-icon">📍</span>
+            <h3>Только Астана</h3>
+            <p>В каталоге оставлены только маршруты по Астане, без других городов.</p>
+        </article>
+        <article class="check-card">
+            <span class="check-icon">🔐</span>
+            <h3>Регистрация обязательна</h3>
+            <p>Без аккаунта можно смотреть описание, но нельзя начать и пройти квест.</p>
+        </article>
+        <article class="check-card">
+            <span class="check-icon">🖼️</span>
+            <h3>Фото и иконки</h3>
+            <p>У каждого маршрута есть собственная визуальная карточка и иконка.</p>
+        </article>
+        <article class="check-card">
+            <span class="check-icon">✅</span>
+            <h3>Проверка заданий</h3>
+            <p>Ответы проверяются по шагам, а неверные попытки показываются игроку.</p>
+        </article>
+    </div>
+</section>
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Подборка</div>
+            <h2>Лучшие маршруты по столице</h2>
+        </div>
+        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Все квесты</a>
+    </div>
+
+    <div class="quest-grid">
+        @foreach (var quest in Model.Take(6))
+        {
+            @await Html.PartialAsync("_QuestCard", quest)
+        }
+    </div>
+</section>
+>>>>>>> d34208a (feature 2.0)

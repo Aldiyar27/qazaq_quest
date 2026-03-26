@@ -2,6 +2,7 @@
     ViewData["Title"] = "Регистрация";
 }
 
+<<<<<<< HEAD
 <style>
 
 *{box-sizing:border-box}
@@ -80,3 +81,44 @@ a{
         <a href="/Auth/Login">Уже есть аккаунт? Войти</a>
     </div>
 </form>
+=======
+<section class="auth-section">
+    <div class="auth-card panel auth-card-rich">
+        <div class="eyebrow">Создай аккаунт</div>
+        <h1>Регистрация</h1>
+        <p class="muted">Без регистрации нельзя участвовать в квестах. Имя и email должны быть уникальными, а пароль — безопасным.</p>
+
+        <form method="post" asp-controller="Auth" asp-action="Register" class="auth-form">
+            <div class="field">
+                <label>Имя пользователя</label>
+                <input type="text" name="name" placeholder="Aldiyar_01" minlength="3" maxlength="30" required>
+                <small class="field-hint">Нельзя зарегистрироваться под уже существующим именем.</small>
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="you@example.com" required>
+                <small class="field-hint">Один email можно использовать только для одного аккаунта.</small>
+            </div>
+
+            <div class="field">
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="Минимум 8 символов" required>
+                <small class="field-hint">8–20 символов, заглавная и строчная буква, цифра, спецсимвол. Без пробелов, без abc/123 и без трёх одинаковых символов подряд.</small>
+            </div>
+
+            <div class="field">
+                <label>Подтверждение пароля</label>
+                <input type="password" name="confirmPassword" placeholder="Повтори пароль" required>
+            </div>
+
+            <button class="btn btn-primary auth-btn" type="submit">Создать аккаунт</button>
+        </form>
+
+        <div class="auth-links">
+            <a asp-controller="Auth" asp-action="Login">Уже есть аккаунт? Войти</a>
+            <a asp-controller="Home" asp-action="Index">Вернуться на главную</a>
+        </div>
+    </div>
+</section>
+>>>>>>> d34208a (feature 2.0)

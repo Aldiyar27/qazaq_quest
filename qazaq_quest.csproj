@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+<<<<<<< HEAD
     <TargetFramework>net10.0</TargetFramework>
+=======
+    <TargetFramework>net8.0</TargetFramework>
+>>>>>>> d34208a (feature 2.0)
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>

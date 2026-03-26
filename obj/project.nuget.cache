@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "YjZwDs9167Y=",
   "success": true,
   "projectFilePath": "/Users/aldiyar/qazaq_quest/qazaq_quest.csproj",
+=======
+  "dgSpecHash": "xpUJye6e/IY=",
+  "success": true,
+  "projectFilePath": "/Users/aldiyar/qazaq/qazaq_quest.csproj",
+>>>>>>> d34208a (feature 2.0)
   "expectedPackageFiles": [],
   "logs": []
 }

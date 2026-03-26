@@ -1,0 +1,71 @@
+@model List<QazaqQuest.Models.Quest>
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Защищённая зона</div>
+            <h1>Админ-панель</h1>
+            <p class="muted">Сводка по контенту и структуре проекта для показа заказчику или преподавателю.</p>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">@Model.Count</div>
+            <div class="stat-label">Квестов по Астане</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalCities</div>
+            <div class="stat-label">Городов в каталоге</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.FreeCount / @ViewBag.PaidCount</div>
+            <div class="stat-label">Бесплатные / платные</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalPoints</div>
+            <div class="stat-label">GPS-точек</div>
+        </div>
+    </div>
+
+    <div class="panel table-panel">
+        <div class="table-head">
+            <h2>Каталог контента</h2>
+            <span class="pill">Демо-аналитика</span>
+        </div>
+        <div class="table-scroll">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Квест</th>
+                        <th>Город</th>
+                        <th>Тип</th>
+                        <th>Сложность</th>
+                        <th>Цена</th>
+                        <th>Точек</th>
+                        <th>Партнёр</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var quest in Model)
+                {
+                    <tr>
+                        <td>@quest.Id</td>
+                        <td>@quest.Title</td>
+                        <td>@quest.City</td>
+                        <td>@quest.Type</td>
+                        <td>@quest.Difficulty</td>
+                        <td>@(quest.Price == 0 ? "Бесплатно" : $"{quest.Price} ₸")</td>
+                        <td>@quest.Points.Count</td>
+                        <td>@quest.Partner</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,11 @@
+[
+  {
+    "Id": "ce8fa6ff-92b7-4fa8-9c04-a4ef991e4c92",
+    "Name": "\u0410\u043B\u0434\u0438\u044F\u0440 \u0410\u0448\u043A\u0435\u0435\u0432",
+    "Email": "aldi.year@gmail.com",
+    "Role": "User",
+    "PasswordHash": "XZVTv3CGxldvbL83Tm9SiGi6YkLuVKHtBLx\u002BdloGg\u002BU=",
+    "PasswordSalt": "04tW29RtXgmquOylN8JTtA==",
+    "CreatedAtUtc": "2026-03-26T08:07:36.613488Z"
+  }
+]

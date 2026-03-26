@@ -1,0 +1,98 @@
+@{
+    var userName = Context.Session.GetString("UserName") ?? "Гость";
+    var userRole = Context.Session.GetString("UserRole") ?? "Guest";
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Qazaq Quest";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Qazaq Quest — городские квесты только по Астане: GPS-прохождение, задания, фото-точки и профиль игрока.">
+    <title>@pageTitle · Qazaq Quest</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+</head>
+<body>
+    <div class="page-shell">
+        <div class="topbar">
+            <div class="container topbar-row">
+                <span>Qazaq Quest · квесты только по Астане · участие только после регистрации</span>
+                <span class="topbar-badge">ASP.NET Core MVC</span>
+            </div>
+        </div>
+
+        <header class="site-header">
+            <div class="container nav-row">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">Q</span>
+                    <span>
+                        <span class="brand-title">Qazaq Quest</span>
+                        <span class="brand-subtitle">Городские квесты по Астане</span>
+                    </span>
+                </a>
+
+                <nav class="main-nav">
+                    <a asp-controller="Home" asp-action="Index">Главная</a>
+                    <a asp-controller="Quest" asp-action="Index">Квесты</a>
+                    <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-controller="Admin" asp-action="Index">Admin</a>
+                    }
+                </nav>
+
+                <div class="nav-actions">
+                    <div class="user-chip">
+                        <span class="dot"></span>
+                        <span>@userName</span>
+                        <span class="role-badge">@userRole</span>
+                    </div>
+
+                    @if (string.Equals(userRole, "Guest", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a class="btn btn-ghost" asp-controller="Auth" asp-action="Login">Войти</a>
+                        <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Регистрация</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-ghost" asp-controller="Auth" asp-action="Logout">Выйти</a>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            @await Html.PartialAsync("_Alerts")
+            @RenderBody()
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div>
+                    <div class="footer-title">Qazaq Quest</div>
+                    <p class="footer-text">Демо-проект городских квестов по Астане: красивые карточки, реальные GPS-точки, регистрация перед стартом и пошаговая проверка заданий.</p>
+                </div>
+                <div>
+                    <div class="footer-caption">Разделы</div>
+                    <div class="footer-links">
+                        <a asp-controller="Home" asp-action="Index">Главная</a>
+                        <a asp-controller="Quest" asp-action="Index">Каталог</a>
+                        <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="footer-caption">Что есть в проекте</div>
+                    <div class="footer-links footer-links-stack">
+                        <span>8 квестов по Астане</span>
+                        <span>фото и иконки на карточках</span>
+                        <span>GPS и проверка ответов</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,104 @@
+@model QazaqQuest.Models.Quest
+@{
+    ViewData["Title"] = Model.Title;
+    var isRegistered = ViewBag.IsRegistered is bool registered && registered;
+}
+
+<section class="container section-space">
+    <div class="details-cover details-cover-photo" style="background:@Model.CoverStyle">
+        <img class="details-photo" src="@Model.ImageUrl" alt="@Model.Title">
+        <div class="details-photo-overlay"></div>
+        <div class="details-cover-content">
+            <div class="eyebrow eyebrow-light">@Model.City · @Model.Category</div>
+            <h1>@Model.Title</h1>
+            <p>@Model.Description</p>
+            <div class="inline-pills">
+                <span class="pill pill-light">@Model.Difficulty</span>
+                <span class="pill pill-light">@Model.Type</span>
+                <span class="pill pill-light">@Model.RouteLength</span>
+                <span class="pill pill-light">@Model.Duration</span>
+            </div>
+        </div>
+        <div class="details-icon">@Model.Icon</div>
+    </div>
+
+    <div class="details-grid">
+        <div class="panel">
+            <div class="section-head compact compact-mobile">
+                <h2>Карточка квеста</h2>
+                <span class="price-tag">@(Model.Price == 0 ? "Бесплатно" : $"{Model.Price} ₸")</span>
+            </div>
+
+            <div class="info-grid">
+                <div><span class="meta-label">Город</span><strong>@Model.City</strong></div>
+                <div><span class="meta-label">Языки</span><strong>@Model.Language</strong></div>
+                <div><span class="meta-label">Аудитория</span><strong>@Model.Audience</strong></div>
+                <div><span class="meta-label">Партнёр</span><strong>@Model.Partner</strong></div>
+                <div><span class="meta-label">Бонус</span><strong>@Model.Bonus</strong></div>
+                <div><span class="meta-label">Количество точек</span><strong>@Model.Points.Count</strong></div>
+            </div>
+
+            <div class="action-banner">
+                @if (isRegistered)
+                {
+                    <div class="registration-ok">✅ Аккаунт найден — можно начинать маршрут.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Start" asp-route-id="@Model.Id">Начать квест</a>
+                        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Назад в каталог</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="registration-warning">🔐 Участвовать в квесте можно только после регистрации.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Зарегистрироваться</a>
+                        <a class="btn btn-ghost" asp-controller="Auth" asp-action="Login">У меня уже есть аккаунт</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Как работает проверка</h2>
+            <ul class="feature-list">
+                <li>Игрок стартует маршрут только после регистрации</li>
+                <li>На каждой точке сначала проверяется GPS-позиция</li>
+                <li>Потом открывается форма ответа или выбор варианта</li>
+                <li>После верного ответа открывается следующая точка</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Маршрут по шагам</h2>
+            <div class="route-list">
+                @foreach (var point in Model.Points.OrderBy(p => p.Order))
+                {
+                    <div class="route-item">
+                        <div class="route-order">@point.Order</div>
+                        <div>
+                            <strong>@point.Name</strong>
+                            <div class="muted">@point.TaskType · радиус @point.RadiusMeters м</div>
+                            <div class="route-hint">@point.Task</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Награды маршрута</h2>
+            <div class="reward-grid reward-grid-single">
+                @foreach (var reward in Model.Rewards)
+                {
+                    <div class="reward-card">
+                        <div class="reward-points">+@reward.Points</div>
+                        <h3>@reward.Title</h3>
+                        <p class="muted">@reward.Description</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
