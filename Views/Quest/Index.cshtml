@@ -1,0 +1,87 @@
+@model QazaqQuest.ViewModels.QuestListViewModel
+@{
+    ViewData["Title"] = "Квесты";
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Каталог маршрутов</div>
+            <h1>Квесты по Астане</h1>
+            <p class="muted">Все маршруты доступны только по столице. Для участия нужна регистрация.</p>
+        </div>
+        <div class="inline-pills">
+            <span class="pill">@Model.AvailableCities.Count город</span>
+            <span class="pill">@Model.AvailableTypes.Count формата</span>
+            <span class="pill">@Model.AvailableDifficulties.Count уровня сложности</span>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="get" class="filter-grid">
+            <div class="field field-wide">
+                <label>Поиск по каталогу</label>
+                <input type="text" name="search" value="@Model.Search" placeholder="Например: EXPO, Jastar, Есиль, Бәйтерек">
+            </div>
+
+            <div class="field">
+                <label>Город</label>
+                <select name="city">
+                    <option value="">Все</option>
+                    @foreach (var city in Model.AvailableCities)
+                    {
+                        <option value="@city" selected="@(Model.City == city ? "selected" : null)">@city</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Сложность</label>
+                <select name="difficulty">
+                    <option value="">Любая</option>
+                    @foreach (var difficulty in Model.AvailableDifficulties)
+                    {
+                        <option value="@difficulty" selected="@(Model.Difficulty == difficulty ? "selected" : null)">@difficulty</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Тип</label>
+                <select name="type">
+                    <option value="">Любой</option>
+                    @foreach (var type in Model.AvailableTypes)
+                    {
+                        <option value="@type" selected="@(Model.Type == type ? "selected" : null)">@type</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field action-field">
+                <button class="btn btn-primary" type="submit">Применить фильтры</button>
+                <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="section-head compact">
+        <h2>Найдено маршрутов: @Model.Quests.Count</h2>
+        <span class="registration-note">🔐 Для старта нужна регистрация</span>
+    </div>
+
+    <div class="quest-grid">
+        @foreach (var quest in Model.Quests)
+        {
+            @await Html.PartialAsync("_QuestCard", quest)
+        }
+    </div>
+
+    @if (!Model.Quests.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🗺️</div>
+            <h3>По этим фильтрам ничего не найдено</h3>
+            <p class="muted">Измени критерии поиска или сбрось фильтры, чтобы снова увидеть весь каталог.</p>
+        </div>
+    }
+</section>

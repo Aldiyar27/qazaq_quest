@@ -1,0 +1,65 @@
+@model List<QazaqQuest.Models.Quest>
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<section class="container section-space admin-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Панель администратора</div>
+            <h1>Управление квестами</h1>
+            <p class="muted">Все данные теперь берутся из базы данных PostgreSQL. Здесь можно добавлять, редактировать и удалять квесты, задания, локации и награды.</p>
+        </div>
+        <div class="card-actions">
+            <a class="btn btn-primary" asp-action="CreateQuest">Добавить квест</a>
+        </div>
+    </div>
+
+    <div class="admin-stats-grid">
+        <div class="stat-card"><div class="stat-label">Квестов</div><div class="stat-value">@Model.Count</div></div>
+        <div class="stat-card"><div class="stat-label">Городов</div><div class="stat-value">@ViewBag.TotalCities</div></div>
+        <div class="stat-card"><div class="stat-label">Точек</div><div class="stat-value">@ViewBag.TotalPoints</div></div>
+        <div class="stat-card"><div class="stat-label">Локаций</div><div class="stat-value">@ViewBag.TotalLocations</div></div>
+    </div>
+
+    <div class="panel admin-panel-block">
+        <div class="table-scroll">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Квест</th>
+                        <th>Город</th>
+                        <th>Тип</th>
+                        <th>Сложность</th>
+                        <th>Задания</th>
+                        <th>Локации</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var quest in Model)
+                {
+                    <tr>
+                        <td>@quest.Id</td>
+                        <td>@quest.Title</td>
+                        <td>@quest.City</td>
+                        <td>@quest.Type</td>
+                        <td>@quest.Difficulty</td>
+                        <td>@quest.Points.Count</td>
+                        <td>@quest.Locations.Count</td>
+                        <td>
+                            <div class="card-actions">
+                                <a class="btn btn-ghost compact" asp-action="EditQuest" asp-route-id="@quest.Id">Редактировать</a>
+                                <form method="post" asp-action="DeleteQuest" asp-route-id="@quest.Id" onsubmit="return confirm('Удалить квест?');">
+                                    <button class="btn btn-ghost compact" type="submit">Удалить</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

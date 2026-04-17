@@ -1,0 +1,91 @@
+@model QazaqQuest.Models.UserProfile
+@{
+    ViewData["Title"] = "Профиль";
+    var completedQuestTitles = (ViewBag.CompletedQuestTitles as List<string>) ?? new List<string>();
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Личный кабинет игрока</div>
+            <h1>Профиль</h1>
+            <p class="muted">Здесь видно накопленную статистику, завершённые маршруты и быстрые действия по системе.</p>
+        </div>
+        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Смотреть квесты</a>
+    </div>
+
+    <div class="profile-layout">
+        <div class="panel profile-main">
+            <div class="profile-avatar">@Model.Name.Substring(0, 1).ToUpperInvariant()</div>
+            <div>
+                <h2>@Model.Name</h2>
+                <p class="muted">@Model.Email</p>
+                <div class="inline-pills">
+                    <span class="pill">@Model.Role</span>
+                    <span class="pill">@ViewBag.CityCount локаций Астаны</span>
+                    <span class="pill">@ViewBag.AvailableQuestCount квестов</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid profile-stats">
+            <div class="stat-card">
+                <div class="stat-value">@Model.TotalPoints</div>
+                <div class="stat-label">Очков</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">@Model.CompletedQuests</div>
+                <div class="stat-label">Пройдено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">@Model.Achievements</div>
+                <div class="stat-label">Наград</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Завершённые маршруты</h2>
+            @if (completedQuestTitles.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var title in completedQuestTitles)
+                    {
+                        <div class="completed-item">✅ @title</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty">
+                    <div class="empty-icon">🎒</div>
+                    <h3>Пока нет завершённых квестов</h3>
+                    <p class="muted">Открой маршрут из каталога и пройди его до конца, чтобы статистика обновилась.</p>
+                </div>
+            }
+        </div>
+
+        <div class="panel">
+            <h2>Быстрые действия</h2>
+            <div class="feature-list">
+                <div>Открыть каталог и подобрать маршрут по городу</div>
+                <div>Продолжить прохождение с GPS-проверкой</div>
+                <div>Посмотреть статистику по выполненным квестам</div>
+                @if (Model.Role == "Admin")
+                {
+                    <div>Перейти в admin-панель и посмотреть сводку по системе</div>
+                }
+            </div>
+
+            <div class="card-actions spaced">
+                <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Каталог квестов Астаны</a>
+                @if (Model.Role == "Admin")
+                {
+                    <a class="btn btn-ghost" asp-controller="Admin" asp-action="Index">Admin</a>
+                }
+                <a class="btn btn-ghost" asp-controller="Auth" asp-action="Logout">Выйти</a>
+            </div>
+        </div>
+    </div>
+</section>

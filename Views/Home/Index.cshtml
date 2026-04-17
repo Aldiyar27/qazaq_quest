@@ -1,0 +1,146 @@
+@model List<QazaqQuest.Models.Quest>
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="next-home">
+    <section class="next-hero">
+        <div class="next-hero-bg">
+            <img src="~/photo/astana-bayterek.jpg" alt="Астана — Байтерек" />
+            <div class="next-hero-overlay"></div>
+        </div>
+
+        <div class="container next-hero-content">
+            <div class="next-hero-badge">🇰🇿 Qazaq Quest</div>
+            <h1>Открой <span>Астану</span> заново</h1>
+            <p>
+                Игровые городские квесты, атмосферные маршруты, реальные точки и яркие впечатления.
+                Всё в дизайне из первого проекта, но уже внутри твоего ASP.NET сайта.
+            </p>
+
+            <div class="next-hero-actions">
+                <a class="btn btn-primary big" asp-controller="Auth" asp-action="Register">Начать сейчас</a>
+                <a class="btn btn-glass big" asp-controller="Quest" asp-action="Index">Смотреть квесты</a>
+            </div>
+
+            <div class="next-scroll-indicator">
+                <span></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-features" id="features">
+        <div class="container">
+            <div class="section-heading centered">
+                <h2>Почему выбирают нас</h2>
+                <p>Формат путешествия по городу через игру, дизайн и простую механику прохождения.</p>
+            </div>
+
+            <div class="next-feature-grid">
+                <article class="next-feature-card active">
+                    <div class="feature-icon">🏛️</div>
+                    <h3>Исследуй историю</h3>
+                    <p>Узнавай смысл городских мест, зданий и символов столицы во время прогулки.</p>
+                </article>
+                <article class="next-feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Находи интересные места</h3>
+                    <p>Открывай новые точки, которые обычно пролетают мимо в обычной прогулке.</p>
+                </article>
+                <article class="next-feature-card">
+                    <div class="feature-icon">🎁</div>
+                    <h3>Получай награды</h3>
+                    <p>Проходи задания, собирай впечатления и открывай бонусы партнёров.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-about" id="about">
+        <div class="container next-about-grid">
+            <div class="next-about-copy">
+                <div class="section-kicker">О проекте</div>
+                <h2>Qazaq Quest — это цифровая прогулка по живой Астане</h2>
+                <p>
+                    Ты не просто смотришь на достопримечательности, а проходишь путь с задачами, локациями,
+                    историей и ощущением приключения. Мы объединили современный городской визуал, тёплые оранжевые
+                    акценты и удобную структуру, чтобы сайт выглядел как в первом zip-файле.
+                </p>
+                <div class="next-about-pills">
+                    <span>@ViewBag.QuestCount квестов</span>
+                    <span>@ViewBag.RoutePointCount точек маршрута</span>
+                    <span>GPS-проверка</span>
+                </div>
+            </div>
+            <div class="next-about-card">
+                <img src="~/photo/astana-skyline.jpg" alt="Панорама Астаны" />
+                <div class="about-card-overlay"></div>
+                <div class="about-card-text">
+                    <span>Городские эмоции</span>
+                    <strong>Современный ритм, архитектура и атмосфера столицы</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-quests" id="quests">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Популярные квесты</h2>
+                <p>Подборка маршрутов, которые лучше всего передают атмосферу города.</p>
+            </div>
+
+            <div class="quest-grid next-quest-grid">
+                @foreach (var quest in Model.Take(6))
+                {
+                    @await Html.PartialAsync("_QuestCard", quest)
+                }
+            </div>
+
+            <div class="centered-actions spaced">
+                <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Открыть весь каталог</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-how" id="how">
+        <div class="container">
+            <div class="section-heading centered light">
+                <h2>Как это работает</h2>
+                <p>Всего несколько шагов — и прогулка превращается в полноценное приключение.</p>
+            </div>
+
+            <div class="next-steps-grid">
+                <article class="next-step-card">
+                    <strong>01</strong>
+                    <h3>Зарегистрируйся</h3>
+                    <p>Создай аккаунт, чтобы открыть доступ ко всем маршрутам и сохранению прогресса.</p>
+                </article>
+                <article class="next-step-card">
+                    <strong>02</strong>
+                    <h3>Выбери маршрут</h3>
+                    <p>Открой карточку квеста, посмотри описание и перейди к прохождению.</p>
+                </article>
+                <article class="next-step-card">
+                    <strong>03</strong>
+                    <h3>Проходи точки</h3>
+                    <p>Следуй по локациям, выполняй задания и исследуй город в игровом формате.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-cta">
+        <div class="container next-cta-card">
+            <div>
+                <div class="section-kicker orange">Готов к старту?</div>
+                <h2>Начни своё приключение по Астане уже сейчас</h2>
+                <p>Весь дизайн уже перенесён в ASP.NET проект: яркий hero, оранжевые акценты, карточки и формы.</p>
+            </div>
+            <div class="next-cta-actions">
+                <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Создать аккаунт</a>
+                <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Перейти к квестам</a>
+            </div>
+        </div>
+    </section>
+</div>
