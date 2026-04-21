@@ -1,66 +1,96 @@
 @model QazaqQuest.ViewModels.QuestPlayViewModel
+@using System.Text.Json
 @{
-    ViewData["Title"] = $"Прохождение · {Model.Quest.Title}";
-    var progress = Model.TotalSteps == 0 ? 0 : (int)Math.Round((double)Model.CurrentStepIndex / Model.TotalSteps * 100);
-    var attempts = ViewBag.AnswerAttempts is int tries ? tries : 0;
+    ViewData["Title"] = Model.Quest.Title;
+    var attempts = ViewBag.AnswerAttempts is int value ? value : 0;
+    var playMapId = $"play-route-data-{Model.Quest.Id}";
+    var playPoints = Model.Quest.Points
+        .OrderBy(p => p.Order)
+        .Select(p => new
+        {
+            id = p.Id,
+            order = p.Order,
+            name = p.Name,
+            address = string.IsNullOrWhiteSpace(p.Location?.Address) ? p.Name : p.Location!.Address,
+            latitude = p.Latitude,
+            longitude = p.Longitude,
+            radiusMeters = p.RadiusMeters
+        })
+        .ToList();
 }
 
 <section class="container section-space">
+    <div class="section-head compact compact-mobile">
+        <div>
+            <div class="eyebrow">@Model.Quest.City · @Model.Quest.Category</div>
+            <h1>@Model.Quest.Title</h1>
+        </div>
+        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Details" asp-route-id="@Model.Quest.Id">К карточке квеста</a>
+    </div>
+
     @if (Model.IsCompleted)
     {
         <div class="completion-card centered">
-            <div class="completion-icon">🏁</div>
-            <h2>Квест завершён</h2>
+            <div class="completion-icon">🎉</div>
+            <h2>Маршрут завершён</h2>
             <p class="muted">@Model.Message</p>
-            <div class="card-actions centered-actions">
+            <div class="inline-pills centered-actions">
+                <span class="pill">@Model.TotalSteps шагов пройдено</span>
+                <span class="pill">Награды отправлены в профиль</span>
+            </div>
+            <div class="card-actions centered-actions spaced">
                 <a class="btn btn-primary" asp-controller="Profile" asp-action="Index">Открыть профиль</a>
                 <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">К другим квестам</a>
             </div>
         </div>
     }
-    else
+    else if (Model.CurrentPoint != null)
     {
-        <div class="play-grid">
+        <div class="details-grid">
             <div class="panel">
-                <div class="progress-top">
+                <div class="section-head compact compact-mobile">
                     <div>
-                        <div class="eyebrow">Прохождение маршрута</div>
-                        <h1>@Model.Quest.Title</h1>
-                        <p class="muted">Шаг @Model.CurrentStepIndex из @Model.TotalSteps · @Model.CurrentPoint.Name</p>
+                        <div class="eyebrow">Шаг @Model.CurrentStepIndex из @Model.TotalSteps</div>
+                        <h2>@Model.CurrentPoint.Name</h2>
                     </div>
-                    <span class="pill">@progress%</span>
+                    <span class="pill">Радиус точки: @Model.CurrentPoint.RadiusMeters м</span>
                 </div>
-
-                <div class="progress-bar"><span style="width:@progress%"></span></div>
 
                 @if (!string.IsNullOrWhiteSpace(Model.Message))
                 {
-                    <div class="alert alert-info">@Model.Message</div>
+                    <div class="registration-note">@Model.Message</div>
                 }
 
-                <div class="info-grid">
-                    <div><span class="meta-label">Точка</span><strong>@Model.CurrentPoint.Name</strong></div>
-                    <div><span class="meta-label">Радиус GPS</span><strong>@Model.CurrentPoint.RadiusMeters м</strong></div>
-                    <div><span class="meta-label">Подсказка</span><strong>@Model.CurrentPoint.Hint</strong></div>
-                    <div><span class="meta-label">Формат</span><strong>@Model.CurrentPoint.TaskType</strong></div>
+                <div class="route-hint" style="margin-top:14px;">
+                    <strong>Тип задания:</strong> @Model.CurrentPoint.TaskType
                 </div>
+                <p style="margin-top:14px;">@Model.CurrentPoint.Task</p>
 
-                <div class="task-card">
-                    <h3>Текущее задание</h3>
-                    <p>@Model.CurrentPoint.Task</p>
+                @if (!string.IsNullOrWhiteSpace(Model.CurrentPoint.Hint))
+                {
+                    <div class="field-hint">Подсказка: @Model.CurrentPoint.Hint</div>
+                }
 
-                    @if (Model.CurrentPoint.Options.Any())
-                    {
-                        <div class="options-list">
-                            @foreach (var option in Model.CurrentPoint.Options)
-                            {
-                                <div class="option-chip">@option</div>
-                            }
-                        </div>
-                    }
-                </div>
+                @if (Model.CurrentPoint.Options.Any())
+                {
+                    <div class="options-list" style="margin-top:18px;">
+                        @foreach (var option in Model.CurrentPoint.Options)
+                        {
+                            <div class="option-chip">@option</div>
+                        }
+                    </div>
+                }
 
                 <div class="attempt-chip">Проверка задания · попыток на этой точке: <strong>@attempts</strong></div>
+
+                <div class="inline-pills" style="margin-top:16px;">
+                    <span class="pill">+@ViewBag.ExperienceReward XP за финиш</span>
+                    <span class="pill">+@ViewBag.CoinsReward монет</span>
+                    @if ((int)ViewBag.TimeLimit > 0)
+                    {
+                        <span class="pill">⏱ @ViewBag.TimeLimit мин</span>
+                    }
+                </div>
             </div>
 
             <div class="panel sticky-panel quest-player"
@@ -75,6 +105,15 @@
 
                 <div id="gpsStatus" class="gps-status @(Model.LocationVerified ? "gps-success" : "gps-neutral")">
                     @(Model.LocationVerified ? "Локация подтверждена. Можно переходить к ответу." : "Локация ещё не подтверждена.")
+                </div>
+
+                <div class="quest-map-shell" style="margin:16px 0 18px;">
+                    <div class="quest-map compact" data-quest-map data-active-point-id="@Model.CurrentPoint.Id" data-json-id="@playMapId"></div>
+                    <script id="@playMapId" type="application/json">@Html.Raw(JsonSerializer.Serialize(playPoints))</script>
+                    <div class="quest-map-note">
+                        <span>Текущая точка выделена на карте.</span>
+                        <span>Маршрут помогает быстро понять, куда идти дальше.</span>
+                    </div>
                 </div>
 
                 <div class="gps-actions">
@@ -114,6 +153,12 @@
     }
 </section>
 
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+}
+
 @section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="~/js/quest-maps.js" asp-append-version="true"></script>
     <script src="~/js/quest-player.js" asp-append-version="true"></script>
 }

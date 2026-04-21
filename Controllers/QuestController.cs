@@ -7,26 +7,34 @@ namespace QazaqQuest.Controllers;
 public class QuestController : Controller
 {
     private readonly AppDataService _dataService;
+    private readonly GameService _gameService;
 
-    public QuestController(AppDataService dataService)
+    public QuestController(AppDataService dataService, GameService gameService)
     {
         _dataService = dataService;
+        _gameService = gameService;
     }
 
     public IActionResult Index(string? city, string? difficulty, string? type, string? search)
     {
+        var currentUser = _gameService.GetCurrentUser(HttpContext);
+        var quests = _dataService.FilterQuests(city, difficulty, type, search)
+            .Where(q => !q.IsHidden || (currentUser != null && _gameService.CanUserAccessQuest(currentUser, q)))
+            .ToList();
+
         var model = new QuestListViewModel
         {
             City = city,
             Difficulty = difficulty,
             Type = type,
             Search = search,
-            Quests = _dataService.FilterQuests(city, difficulty, type, search),
+            Quests = quests,
             AvailableCities = _dataService.GetCities(),
             AvailableDifficulties = _dataService.GetDifficulties(),
             AvailableTypes = _dataService.GetTypes()
         };
 
+        ViewBag.CurrentLevel = currentUser?.Level ?? 0;
         return View(model);
     }
 
@@ -36,7 +44,11 @@ public class QuestController : Controller
         if (quest == null)
             return NotFound();
 
+        var user = _gameService.GetCurrentUser(HttpContext);
         ViewBag.IsRegistered = IsRegisteredUser();
+        ViewBag.CanAccessQuest = user != null && _gameService.CanUserAccessQuest(user, quest);
+        ViewBag.CurrentLevel = user?.Level ?? 0;
+        ViewBag.RouteUrl = BuildRouteUrl(quest);
         return View(quest);
     }
 
@@ -49,10 +61,18 @@ public class QuestController : Controller
         }
 
         var quest = _dataService.GetQuestById(id);
-        if (quest == null)
+        var user = _gameService.GetCurrentUser(HttpContext);
+        if (quest == null || user == null)
             return NotFound();
 
+        if (!_gameService.CanUserAccessQuest(user, quest))
+        {
+            TempData["Error"] = $"Этот маршрут откроется на уровне {quest.UnlockLevel}. Сейчас у тебя уровень {user.Level}.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
         HttpContext.Session.SetInt32($"Quest_{id}_Step", 0);
+        _gameService.StartQuest(user, quest);
 
         foreach (var point in quest.Points)
         {
@@ -73,11 +93,14 @@ public class QuestController : Controller
         }
 
         var quest = _dataService.GetQuestById(id);
-        if (quest == null)
+        var userId = _gameService.GetCurrentUserId(HttpContext);
+        if (quest == null || userId == null)
             return NotFound();
 
         var orderedPoints = quest.Points.OrderBy(p => p.Order).ToList();
-        var currentStepIndex = HttpContext.Session.GetInt32($"Quest_{id}_Step") ?? 0;
+        var progress = _gameService.GetUserQuestProgress(userId.Value, id);
+        var currentStepIndex = progress?.CurrentStep ?? (HttpContext.Session.GetInt32($"Quest_{id}_Step") ?? 0);
+        HttpContext.Session.SetInt32($"Quest_{id}_Step", currentStepIndex);
 
         if (currentStepIndex >= orderedPoints.Count)
         {
@@ -87,12 +110,15 @@ public class QuestController : Controller
                 IsCompleted = true,
                 TotalSteps = orderedPoints.Count,
                 CurrentStepIndex = orderedPoints.Count,
-                Message = "Квест завершён. Награды и очки начислены в демо-режиме."
+                Message = "Квест завершён. Опыт, монеты и достижения начислены в профиль."
             });
         }
 
         var currentPoint = orderedPoints[currentStepIndex];
         ViewBag.AnswerAttempts = HttpContext.Session.GetInt32(GetAnswerAttemptsSessionKey(id, currentPoint.Id)) ?? 0;
+        ViewBag.TimeLimit = quest.IsTimed ? quest.TimeLimitMinutes : 0;
+        ViewBag.ExperienceReward = quest.ExperienceReward;
+        ViewBag.CoinsReward = quest.CoinsReward;
 
         return View(new QuestPlayViewModel
         {
@@ -124,12 +150,7 @@ public class QuestController : Controller
         if (currentPoint == null || currentPoint.Id != request.PointId)
             return Json(new { success = false, message = "Сейчас активна другая точка маршрута." });
 
-        var distance = _dataService.CalculateDistanceMeters(
-            request.Latitude,
-            request.Longitude,
-            currentPoint.Latitude,
-            currentPoint.Longitude);
-
+        var distance = _dataService.CalculateDistanceMeters(request.Latitude, request.Longitude, currentPoint.Latitude, currentPoint.Longitude);
         var withinRadius = distance <= currentPoint.RadiusMeters;
 
         if (withinRadius)
@@ -160,7 +181,8 @@ public class QuestController : Controller
         }
 
         var quest = _dataService.GetQuestById(id);
-        if (quest == null)
+        var userId = _gameService.GetCurrentUserId(HttpContext);
+        if (quest == null || userId == null)
             return NotFound();
 
         var orderedPoints = quest.Points.OrderBy(p => p.Order).ToList();
@@ -170,28 +192,29 @@ public class QuestController : Controller
         if (currentPoint == null || currentPoint.Id != pointId)
             return RedirectToAction(nameof(Play), new { id, message = "Нельзя перескакивать между точками маршрута." });
 
-        var isLocationVerified = string.Equals(
-            HttpContext.Session.GetString(GetLocationSessionKey(id, pointId)),
-            "true",
-            StringComparison.OrdinalIgnoreCase);
-
+        var isLocationVerified = string.Equals(HttpContext.Session.GetString(GetLocationSessionKey(id, pointId)), "true", StringComparison.OrdinalIgnoreCase);
         if (!isLocationVerified)
             return RedirectToAction(nameof(Play), new { id, message = "Сначала подтверди геолокацию на текущей точке." });
 
         if (Normalize(currentPoint.Answer) == Normalize(answer))
         {
-            HttpContext.Session.SetInt32($"Quest_{id}_Step", currentStep + 1);
+            var nextStep = currentStep + 1;
+            HttpContext.Session.SetInt32($"Quest_{id}_Step", nextStep);
             HttpContext.Session.Remove(GetLocationSessionKey(id, pointId));
             HttpContext.Session.Remove(GetAnswerAttemptsSessionKey(id, pointId));
 
-            if (currentStep + 1 >= orderedPoints.Count)
-                TempData["Success"] = $"Квест «{quest.Title}» завершён! Награды начислены в демо-режиме.";
+            var completed = nextStep >= orderedPoints.Count;
+            _gameService.AdvanceStep(userId.Value, quest, completed);
 
-            return RedirectToAction(nameof(Play), new { id, message = "Верно! Проверка задания пройдена, следующая точка открыта." });
+            if (completed)
+                TempData["Success"] = $"Квест «{quest.Title}» завершён! Опыт, монеты и достижения начислены.";
+
+            return RedirectToAction(nameof(Play), new { id, message = completed ? "Маршрут закрыт. Профиль и лидерборд уже обновлены." : "Верно! Проверка задания пройдена, следующая точка открыта." });
         }
 
         var attempts = (HttpContext.Session.GetInt32(GetAnswerAttemptsSessionKey(id, pointId)) ?? 0) + 1;
         HttpContext.Session.SetInt32(GetAnswerAttemptsSessionKey(id, pointId), attempts);
+        _gameService.RecordAttempt(userId.Value, id);
 
         return RedirectToAction(nameof(Play), new { id, message = $"Ответ неверный. Попытка №{attempts}. Используй подсказку и попробуй снова." });
     }
@@ -199,12 +222,15 @@ public class QuestController : Controller
     private bool IsRegisteredUser() =>
         !string.Equals(HttpContext.Session.GetString("UserRole") ?? "Guest", "Guest", StringComparison.OrdinalIgnoreCase);
 
-    private static string Normalize(string value) =>
-        value.Trim().Replace("ё", "е", StringComparison.OrdinalIgnoreCase).ToLowerInvariant();
+    private static string Normalize(string value) => value.Trim().Replace("ё", "е", StringComparison.OrdinalIgnoreCase).ToLowerInvariant();
+    private static string GetLocationSessionKey(int questId, int pointId) => $"Quest_{questId}_Point_{pointId}_Verified";
+    private static string GetAnswerAttemptsSessionKey(int questId, int pointId) => $"Quest_{questId}_Point_{pointId}_Attempts";
 
-    private static string GetLocationSessionKey(int questId, int pointId) =>
-        $"Quest_{questId}_Point_{pointId}_Verified";
-
-    private static string GetAnswerAttemptsSessionKey(int questId, int pointId) =>
-        $"Quest_{questId}_Point_{pointId}_Attempts";
+    private static string BuildRouteUrl(QazaqQuest.Models.Quest quest)
+    {
+        var ordered = quest.Locations.OrderBy(x => x.Id).ToList();
+        if (!ordered.Any()) return string.Empty;
+        var points = string.Join('/', ordered.Select(x => $"{x.Latitude},{x.Longitude}"));
+        return $"https://www.google.com/maps/dir/{points}";
+    }
 }

@@ -12,6 +12,7 @@
     <meta name="description" content="Qazaq Quest — городские квесты по Астане: красивые маршруты, задания, призы и удобное прохождение.">
     <title>@pageTitle · Qazaq Quest</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <div class="page-shell next-theme-shell">
@@ -32,6 +33,7 @@
                     <a asp-controller="Home" asp-action="Index">Главная</a>
                     <a asp-controller="Quest" asp-action="Index">Квесты</a>
                     <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    <a asp-controller="Leaderboard" asp-action="Index">Рейтинг</a>
                     @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
                     {
                         <a asp-controller="Admin" asp-action="Index">Admin</a>
@@ -73,6 +75,7 @@
                         <a asp-controller="Home" asp-action="Index">Главная</a>
                         <a asp-controller="Quest" asp-action="Index">Каталог квестов</a>
                         <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    <a asp-controller="Leaderboard" asp-action="Index">Рейтинг</a>
                     </div>
                 </div>
                 <div>

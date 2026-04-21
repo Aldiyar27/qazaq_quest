@@ -121,7 +121,7 @@ private static List<Quest> SeedQuests()
                 Description = "Квест по символам новой столицы: панорамы, легенды о дереве жизни, архитектурные детали и точные наблюдения.",
                 City = "Астана", Difficulty = "Средний", Type = "Бесплатный", Price = 0, Duration = "55–75 минут", RouteLength = "2.8 км",
                 Category = "Архитектура и история", Audience = "Туристы, пары, друзья", ImageUrl = "/photo/quest-bayterek.svg",
-                CoverStyle = "linear-gradient(135deg, #0f766e 0%, #38bdf8 100%)", Icon = "🌇", Partner = "Sky Coffee", Bonus = "Напиток 1+1 после финиша",
+                CoverStyle = "linear-gradient(135deg, #0f766e 0%, #38bdf8 100%)", Icon = "🌇", Partner = "Sky Coffee", Bonus = "Напиток 1+1 после финиша", IsFeatured = true, ExperienceReward = 130, CoinsReward = 35,
                 Points = new List<QuestPoint>
                 {
                     new() { Id = 101, Order = 1, Name = "Бәйтерек", TaskType = "Текстовый вопрос", Task = "Подойди к монументу и введи кодовое слово: өмір.", Answer = "өмір", Hint = "Слово связано с идеей дерева жизни.", Latitude = 51.1282, Longitude = 71.4304, RadiusMeters = 180 },
@@ -142,7 +142,7 @@ private static List<Quest> SeedQuests()
                 Description = "Быстрый молодёжный маршрут у Jastar: уличная энергия, короткие задания, GPS-подтверждение и командный темп.",
                 City = "Астана", Difficulty = "Лёгкий", Type = "Бесплатный", Price = 0, Duration = "35–50 минут", RouteLength = "1.6 км",
                 Category = "Молодёжный urban-квест", Audience = "Студенты, друзья, подростки", ImageUrl = "/photo/quest-jastar.svg",
-                CoverStyle = "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)", Icon = "🧭", Partner = "Jastar Space", Bonus = "Бонусный бейдж и промокод",
+                CoverStyle = "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)", Icon = "🧭", Partner = "Jastar Space", Bonus = "Бонусный бейдж и промокод", IsFeatured = true, ExperienceReward = 100, CoinsReward = 20,
                 Points = new List<QuestPoint>
                 {
                     new() { Id = 201, Order = 1, Name = "Jastar Astana", TaskType = "Текстовый вопрос", Task = "Доберись до стартовой точки и введи слово: жастар.", Answer = "жастар", Hint = "Совпадает с названием локации.", Latitude = 51.170104, Longitude = 71.427882, RadiusMeters = 140 },
@@ -163,7 +163,7 @@ private static List<Quest> SeedQuests()
                 Description = "Маршрут по району EXPO с заданиями про форму, свет, устойчивое будущее и фото-ориентиры.",
                 City = "Астана", Difficulty = "Средний", Type = "Платный", Price = 2490, Duration = "65–85 минут", RouteLength = "3.1 км",
                 Category = "Технологии и архитектура", Audience = "Студенты, туристы, команды", ImageUrl = "/photo/quest-expo.svg",
-                CoverStyle = "linear-gradient(135deg, #2563eb 0%, #22c55e 100%)", Icon = "⚡", Partner = "Expo Hub", Bonus = "Скидка на кофе в павильоне",
+                CoverStyle = "linear-gradient(135deg, #2563eb 0%, #22c55e 100%)", Icon = "⚡", Partner = "Expo Hub", Bonus = "Скидка на кофе в павильоне", IsTimed = true, TimeLimitMinutes = 80, IsFeatured = true, ExperienceReward = 160, CoinsReward = 45,
                 Points = new List<QuestPoint>
                 {
                     new() { Id = 301, Order = 1, Name = "Сфера Нур Алем", TaskType = "Текстовый вопрос", Task = "Посмотри на главное здание и введи слово: сфера.", Answer = "сфера", Hint = "Форма идеально круглая.", Latitude = 51.0907, Longitude = 71.4181, RadiusMeters = 180 },
@@ -269,7 +269,7 @@ private static List<Quest> SeedQuests()
                 Description = "Кофейный мини-квест у Master Coffee Express: найди нужную точку, осмотрись внутри, узнай имя бариста и введи правильный ответ.",
                 City = "Астана", Difficulty = "Лёгкий", Type = "Бесплатный", Price = 0, Duration = "20–30 минут", RouteLength = "0.4 км",
                 Category = "Кофейный city-квест", Audience = "Друзья, пары, студенты", ImageUrl = "/photo/food-quest.jpg",
-                CoverStyle = "linear-gradient(135deg, #6f4e37 0%, #d4a373 100%)", Icon = "☕", Partner = "Master Coffee Express", Bonus = "Бейдж Coffee Hunter и идея для сторис",
+                CoverStyle = "linear-gradient(135deg, #6f4e37 0%, #d4a373 100%)", Icon = "☕", Partner = "Master Coffee Express", Bonus = "Бейдж Coffee Hunter и идея для сторис", IsHidden = true, UnlockLevel = 2, ExperienceReward = 80, CoinsReward = 30,
                 Points = new List<QuestPoint>
                 {
                     new() { Id = 901, Order = 1, Name = "Master Coffee Express", TaskType = "Текстовый вопрос", Task = "Приди к кофейне Master Coffee Express и подтверди старт. Введи кодовое слово: кофе.", Answer = "кофе", Hint = "Самое очевидное слово для старта кофейного маршрута.", Latitude = 51.124485, Longitude = 71.417105, RadiusMeters = 150 },
@@ -290,7 +290,7 @@ private static List<Quest> SeedQuests()
                 Description = "Прогулка по набережной и мостам: вода, ветер, обзорные точки и финальный маршрут на закате.",
                 City = "Астана", Difficulty = "Средний", Type = "Бесплатный", Price = 0, Duration = "60–80 минут", RouteLength = "3.0 км",
                 Category = "Набережная и виды", Audience = "Пары, друзья, туристы", ImageUrl = "/photo/quest-river.svg",
-                CoverStyle = "linear-gradient(135deg, #0891b2 0%, #22c55e 100%)", Icon = "🌉", Partner = "River Side", Bonus = "Цифровой бейдж «Мосты Астаны»",
+                CoverStyle = "linear-gradient(135deg, #0891b2 0%, #22c55e 100%)", Icon = "🌉", Partner = "River Side", Bonus = "Цифровой бейдж «Мосты Астаны»", IsCoop = true, ExperienceReward = 140, CoinsReward = 40,
                 Points = new List<QuestPoint>
                 {
                     new() { Id = 801, Order = 1, Name = "Старт у набережной", TaskType = "Текстовый вопрос", Task = "Введи слово старта: есіл.", Answer = "есіл", Hint = "Название реки.", Latitude = 51.1462, Longitude = 71.4210, RadiusMeters = 180 },

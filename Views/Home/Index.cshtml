@@ -1,6 +1,22 @@
 @model List<QazaqQuest.Models.Quest>
+@using System.Text.Json
 @{
     ViewData["Title"] = "Главная";
+    var homeMapId = "home-featured-route-data";
+    var mapPoints = Model
+        .Where(q => q.Points.Any())
+        .Select(q => q.Points.OrderBy(p => p.Order).First())
+        .Select((p, index) => new
+        {
+            id = p.Id,
+            order = index + 1,
+            name = p.Name,
+            address = p.Name,
+            latitude = p.Latitude,
+            longitude = p.Longitude,
+            radiusMeters = p.RadiusMeters
+        })
+        .ToList();
 }
 
 <div class="next-home">
@@ -70,6 +86,8 @@
                     <span>@ViewBag.QuestCount квестов</span>
                     <span>@ViewBag.RoutePointCount точек маршрута</span>
                     <span>GPS-проверка</span>
+                    <span>уровни и достижения</span>
+                    <span>скрытые маршруты</span>
                 </div>
             </div>
             <div class="next-about-card">
@@ -99,6 +117,29 @@
 
             <div class="centered-actions spaced">
                 <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Открыть весь каталог</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="next-about" id="city-map">
+        <div class="container">
+            <div class="section-heading">
+                <h2>Карта квестов по городу</h2>
+                <p>На главной теперь есть живая карта: она показывает стартовые точки популярных маршрутов и делает проект визуально сильнее.</p>
+            </div>
+            <div class="home-map-layout">
+                <div class="quest-map large" data-quest-map data-json-id="@homeMapId"></div>
+                <script id="@homeMapId" type="application/json">@Html.Raw(JsonSerializer.Serialize(mapPoints))</script>
+                <div class="home-map-sidebar">
+                    <div class="home-map-card">
+                        <h3>Стартовые точки квестов</h3>
+                        <p>Каждый маркер — это старт одной из популярных прогулок. Пользователь сразу видит, что проект завязан на реальном городе, а не только на карточках.</p>
+                    </div>
+                    <div class="home-map-card">
+                        <h3>Что это даёт</h3>
+                        <p>Карта добавляет ощущение настоящего маршрута, помогает быстрее выбрать квест и делает сайт более похожим на полноценный сервис.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -144,3 +185,12 @@
         </div>
     </section>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="~/js/quest-maps.js" asp-append-version="true"></script>
+}

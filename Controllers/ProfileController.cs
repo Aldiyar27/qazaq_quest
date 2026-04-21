@@ -7,31 +7,54 @@ namespace QazaqQuest.Controllers;
 public class ProfileController : Controller
 {
     private readonly AppDataService _dataService;
+    private readonly GameService _gameService;
 
-    public ProfileController(AppDataService dataService)
+    public ProfileController(AppDataService dataService, GameService gameService)
     {
         _dataService = dataService;
+        _gameService = gameService;
     }
 
     public IActionResult Index()
     {
         var allQuests = _dataService.GetQuests();
-        var completedQuests = allQuests
-            .Where(q => (HttpContext.Session.GetInt32($"Quest_{q.Id}_Step") ?? 0) >= q.Points.Count)
-            .ToList();
+        var currentUser = _gameService.GetCurrentUser(HttpContext);
 
+        if (currentUser == null)
+        {
+            var guest = new UserProfile
+            {
+                Name = HttpContext.Session.GetString("UserName") ?? "Гость",
+                Email = HttpContext.Session.GetString("UserEmail") ?? "guest@qazaqquest.demo",
+                Role = HttpContext.Session.GetString("UserRole") ?? "Guest"
+            };
+            return View(guest);
+        }
+
+        var completedProgresses = currentUser.QuestProgresses.Where(x => x.IsCompleted).ToList();
+        var completedQuests = allQuests.Where(q => completedProgresses.Any(p => p.QuestId == q.Id)).ToList();
         var model = new UserProfile
         {
-            Name = HttpContext.Session.GetString("UserName") ?? "Гость",
-            Email = HttpContext.Session.GetString("UserEmail") ?? "guest@qazaqquest.demo",
-            Role = HttpContext.Session.GetString("UserRole") ?? "Guest",
+            Name = currentUser.Name,
+            Email = currentUser.Email,
+            Role = currentUser.Role,
+            AvatarUrl = currentUser.AvatarUrl,
             CompletedQuests = completedQuests.Count,
+            StartedQuests = currentUser.QuestProgresses.Count,
             TotalPoints = _dataService.GetTotalRewardPoints(completedQuests),
-            Achievements = completedQuests.Sum(q => q.Rewards.Count)
+            Achievements = currentUser.Achievements.Count,
+            ExperiencePoints = currentUser.ExperiencePoints,
+            Coins = currentUser.Coins,
+            Level = currentUser.Level,
+            RankPosition = _gameService.GetUserRank(currentUser.Id)
         };
 
         ViewBag.CompletedQuestTitles = completedQuests.Select(q => q.Title).ToList();
-        ViewBag.AvailableQuestCount = allQuests.Count;
+        ViewBag.AchievementsList = currentUser.Achievements.OrderByDescending(x => x.UnlockedAtUtc).ToList();
+        ViewBag.InProgress = currentUser.QuestProgresses.Where(x => !x.IsCompleted)
+            .Select(x => new { Quest = allQuests.FirstOrDefault(q => q.Id == x.QuestId)?.Title ?? "Маршрут", x.CurrentStep, x.TotalSteps })
+            .ToList();
+        ViewBag.AvailableQuestCount = allQuests.Count(q => !q.IsHidden || _gameService.CanUserAccessQuest(currentUser, q));
         ViewBag.CityCount = allQuests.Select(q => q.City).Distinct().Count();
 
         return View(model);

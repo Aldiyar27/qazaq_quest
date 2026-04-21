@@ -1,7 +1,10 @@
+@using QazaqQuest.Models
 @model QazaqQuest.Models.UserProfile
 @{
     ViewData["Title"] = "Профиль";
     var completedQuestTitles = (ViewBag.CompletedQuestTitles as List<string>) ?? new List<string>();
+    var achievements = (ViewBag.AchievementsList as List<UserAchievement>) ?? new List<UserAchievement>();
+    var inProgress = ViewBag.InProgress as IEnumerable<dynamic> ?? new List<dynamic>();
 }
 
 <section class="container section-space">
@@ -9,9 +12,12 @@
         <div>
             <div class="eyebrow">Личный кабинет игрока</div>
             <h1>Профиль</h1>
-            <p class="muted">Здесь видно накопленную статистику, завершённые маршруты и быстрые действия по системе.</p>
+            <p class="muted">Здесь видны уровень, достижения, монеты, прогресс по маршрутам и место в лидерборде.</p>
         </div>
-        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Смотреть квесты</a>
+        <div class="card-actions">
+            <a class="btn btn-ghost" asp-controller="Leaderboard" asp-action="Index">Лидерборд</a>
+            <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Смотреть квесты</a>
+        </div>
     </div>
 
     <div class="profile-layout">
@@ -22,6 +28,8 @@
                 <p class="muted">@Model.Email</p>
                 <div class="inline-pills">
                     <span class="pill">@Model.Role</span>
+                    <span class="pill">Уровень @Model.Level</span>
+                    <span class="pill">Место #@Model.RankPosition</span>
                     <span class="pill">@ViewBag.CityCount локаций Астаны</span>
                     <span class="pill">@ViewBag.AvailableQuestCount квестов</span>
                 </div>
@@ -29,22 +37,33 @@
         </div>
 
         <div class="stats-grid profile-stats">
-            <div class="stat-card">
-                <div class="stat-value">@Model.TotalPoints</div>
-                <div class="stat-label">Очков</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">@Model.CompletedQuests</div>
-                <div class="stat-label">Пройдено</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">@Model.Achievements</div>
-                <div class="stat-label">Наград</div>
-            </div>
+            <div class="stat-card"><div class="stat-value">@Model.ExperiencePoints</div><div class="stat-label">XP</div></div>
+            <div class="stat-card"><div class="stat-value">@Model.Coins</div><div class="stat-label">Монет</div></div>
+            <div class="stat-card"><div class="stat-value">@Model.CompletedQuests</div><div class="stat-label">Пройдено</div></div>
+            <div class="stat-card"><div class="stat-value">@Model.StartedQuests</div><div class="stat-label">Начато</div></div>
+            <div class="stat-card"><div class="stat-value">@Model.Achievements</div><div class="stat-label">Достижений</div></div>
+            <div class="stat-card"><div class="stat-value">@Model.TotalPoints</div><div class="stat-label">Очков наград</div></div>
         </div>
     </div>
 
     <div class="details-grid lower">
+        <div class="panel">
+            <h2>Маршруты в процессе</h2>
+            @if (inProgress.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var item in inProgress)
+                    {
+                        <div class="completed-item">🧭 @item.Quest — шаг @item.CurrentStep из @item.TotalSteps</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">⏳</div><h3>Нет активных маршрутов</h3><p class="muted">Выбери новый квест и начни прохождение.</p></div>
+            }
+        </div>
+
         <div class="panel">
             <h2>Завершённые маршруты</h2>
             @if (completedQuestTitles.Any())
@@ -58,11 +77,26 @@
             }
             else
             {
-                <div class="empty-state compact-empty">
-                    <div class="empty-icon">🎒</div>
-                    <h3>Пока нет завершённых квестов</h3>
-                    <p class="muted">Открой маршрут из каталога и пройди его до конца, чтобы статистика обновилась.</p>
+                <div class="empty-state compact-empty"><div class="empty-icon">🎒</div><h3>Пока нет завершённых квестов</h3><p class="muted">Открой маршрут из каталога и пройди его до конца.</p></div>
+            }
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Достижения</h2>
+            @if (achievements.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var achievement in achievements)
+                    {
+                        <div class="completed-item">🏆 <strong>@achievement.Title</strong> — @achievement.Description (+@achievement.RewardPoints XP)</div>
+                    }
                 </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">🏅</div><h3>Достижения ещё не открыты</h3><p class="muted">Заверши первые маршруты, чтобы открыть новые бейджи.</p></div>
             }
         </div>
 
@@ -70,20 +104,15 @@
             <h2>Быстрые действия</h2>
             <div class="feature-list">
                 <div>Открыть каталог и подобрать маршрут по городу</div>
+                <div>Посмотреть рейтинг игроков</div>
                 <div>Продолжить прохождение с GPS-проверкой</div>
-                <div>Посмотреть статистику по выполненным квестам</div>
-                @if (Model.Role == "Admin")
-                {
-                    <div>Перейти в admin-панель и посмотреть сводку по системе</div>
-                }
+                <div>Собирать XP, монеты и скрытые маршруты</div>
+                @if (Model.Role == "Admin") { <div>Перейти в admin-панель и посмотреть сводку по системе</div> }
             </div>
-
             <div class="card-actions spaced">
                 <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Каталог квестов Астаны</a>
-                @if (Model.Role == "Admin")
-                {
-                    <a class="btn btn-ghost" asp-controller="Admin" asp-action="Index">Admin</a>
-                }
+                <a class="btn btn-ghost" asp-controller="Leaderboard" asp-action="Index">Рейтинг</a>
+                @if (Model.Role == "Admin") { <a class="btn btn-ghost" asp-controller="Admin" asp-action="Index">Admin</a> }
                 <a class="btn btn-ghost" asp-controller="Auth" asp-action="Logout">Выйти</a>
             </div>
         </div>

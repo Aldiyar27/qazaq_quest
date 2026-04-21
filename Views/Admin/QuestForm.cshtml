@@ -34,6 +34,14 @@
                 <div class="field"><label>Язык</label><input asp-for="Quest.Language" /></div>
                 <div class="field"><label>Партнёр</label><input asp-for="Quest.Partner" /></div>
                 <div class="field"><label>Бонус</label><input asp-for="Quest.Bonus" /></div>
+                <div class="field"><label>Уровень открытия</label><input asp-for="Quest.UnlockLevel" type="number" min="1" /></div>
+                <div class="field"><label>XP за финиш</label><input asp-for="Quest.ExperienceReward" type="number" min="0" /></div>
+                <div class="field"><label>Монеты за финиш</label><input asp-for="Quest.CoinsReward" type="number" min="0" /></div>
+                <div class="field"><label>Лимит времени, мин</label><input asp-for="Quest.TimeLimitMinutes" type="number" min="0" /></div>
+                <div class="field"><label><input asp-for="Quest.IsHidden" type="checkbox" /> Скрытый квест</label></div>
+                <div class="field"><label><input asp-for="Quest.IsTimed" type="checkbox" /> Квест на время</label></div>
+                <div class="field"><label><input asp-for="Quest.IsCoop" type="checkbox" /> Кооператив</label></div>
+                <div class="field"><label><input asp-for="Quest.IsFeatured" type="checkbox" /> Показывать на главной</label></div>
             </div>
         </div>
 

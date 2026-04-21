@@ -1,7 +1,25 @@
 @model QazaqQuest.Models.Quest
+@using System.Text.Json
 @{
     ViewData["Title"] = Model.Title;
     var isRegistered = ViewBag.IsRegistered is bool registered && registered;
+    var canAccess = ViewBag.CanAccessQuest is bool access && access;
+    var currentLevel = ViewBag.CurrentLevel is int level ? level : 0;
+    var routeUrl = ViewBag.RouteUrl as string ?? string.Empty;
+    var routeMapId = $"quest-route-data-{Model.Id}";
+    var routePoints = Model.Points
+        .OrderBy(p => p.Order)
+        .Select(p => new
+        {
+            id = p.Id,
+            order = p.Order,
+            name = p.Name,
+            address = string.IsNullOrWhiteSpace(p.Location?.Address) ? p.Name : p.Location!.Address,
+            latitude = p.Latitude,
+            longitude = p.Longitude,
+            radiusMeters = p.RadiusMeters
+        })
+        .ToList();
 }
 
 <section class="container section-space">
@@ -17,6 +35,9 @@
                 <span class="pill pill-light">@Model.Type</span>
                 <span class="pill pill-light">@Model.RouteLength</span>
                 <span class="pill pill-light">@Model.Duration</span>
+                @if (Model.IsTimed) { <span class="pill pill-light">⏱ @Model.TimeLimitMinutes мин</span> }
+                @if (Model.IsCoop) { <span class="pill pill-light">👥 Кооп</span> }
+                @if (Model.IsHidden) { <span class="pill pill-light">🔒 Скрытый</span> }
             </div>
         </div>
         <div class="details-icon">@Model.Icon</div>
@@ -36,18 +57,12 @@
                 <div><span class="meta-label">Партнёр</span><strong>@Model.Partner</strong></div>
                 <div><span class="meta-label">Бонус</span><strong>@Model.Bonus</strong></div>
                 <div><span class="meta-label">Количество точек</span><strong>@Model.Points.Count</strong></div>
+                <div><span class="meta-label">Требуемый уровень</span><strong>@Model.UnlockLevel</strong></div>
+                <div><span class="meta-label">Награда</span><strong>@Model.ExperienceReward XP · @Model.CoinsReward монет</strong></div>
             </div>
 
             <div class="action-banner">
-                @if (isRegistered)
-                {
-                    <div class="registration-ok">✅ Аккаунт найден — можно начинать маршрут.</div>
-                    <div class="card-actions spaced">
-                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Start" asp-route-id="@Model.Id">Начать квест</a>
-                        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Назад в каталог</a>
-                    </div>
-                }
-                else
+                @if (!isRegistered)
                 {
                     <div class="registration-warning">🔐 Участвовать в квесте можно только после регистрации.</div>
                     <div class="card-actions spaced">
@@ -55,28 +70,52 @@
                         <a class="btn btn-ghost" asp-controller="Auth" asp-action="Login">У меня уже есть аккаунт</a>
                     </div>
                 }
+                else if (!canAccess)
+                {
+                    <div class="registration-warning">🔒 Сейчас маршрут недоступен. Нужен уровень @Model.UnlockLevel, у тебя уровень @currentLevel.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Выбрать другой квест</a>
+                        <a class="btn btn-ghost" asp-controller="Profile" asp-action="Index">Открыть профиль</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="registration-ok">✅ Аккаунт найден — можно начинать маршрут.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Start" asp-route-id="@Model.Id">Начать квест</a>
+                        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Назад в каталог</a>
+                    </div>
+                }
             </div>
         </div>
 
-        <div class="panel">
-            <h2>Как работает проверка</h2>
-            <ul class="feature-list">
-                <li>Игрок стартует маршрут только после регистрации</li>
-                <li>На каждой точке сначала проверяется GPS-позиция</li>
-                <li>Потом открывается форма ответа или выбор варианта</li>
-                <li>После верного ответа открывается следующая точка</li>
-            </ul>
+        <div class="panel quest-map-shell">
+            <h2>Интерактивная карта маршрута</h2>
+            <div class="quest-map large" data-quest-map data-json-id="@routeMapId"></div>
+            <script id="@routeMapId" type="application/json">@Html.Raw(JsonSerializer.Serialize(routePoints))</script>
+            <div class="map-summary">
+                <div class="map-summary-card"><strong>@Model.Points.Count точек</strong><span>Все шаги маршрута уже связаны в единую линию на карте.</span></div>
+                <div class="map-summary-card"><strong>@Model.RouteLength</strong><span>Протяжённость маршрута для прогулки по городу.</span></div>
+                <div class="map-summary-card"><strong>@Model.Duration</strong><span>Среднее время прохождения с заданиями и остановками.</span></div>
+            </div>
+            <div class="quest-map-note">
+                <span>На карте показаны все точки квеста по порядку.</span>
+                @if (!string.IsNullOrWhiteSpace(routeUrl))
+                {
+                    <a class="btn btn-ghost" href="@routeUrl" target="_blank" rel="noopener noreferrer">Открыть маршрут во внешней карте</a>
+                }
+            </div>
         </div>
     </div>
 
     <div class="details-grid lower">
         <div class="panel">
             <h2>Маршрут по шагам</h2>
-            <div class="route-list">
+            <div class="route-preview-list">
                 @foreach (var point in Model.Points.OrderBy(p => p.Order))
                 {
-                    <div class="route-item">
-                        <div class="route-order">@point.Order</div>
+                    <div class="route-preview-item">
+                        <div class="route-preview-order">@point.Order</div>
                         <div>
                             <strong>@point.Name</strong>
                             <div class="muted">@point.TaskType · радиус @point.RadiusMeters м</div>
@@ -90,6 +129,16 @@
         <div class="panel">
             <h2>Награды маршрута</h2>
             <div class="reward-grid reward-grid-single">
+                <div class="reward-card">
+                    <div class="reward-points">+@Model.ExperienceReward XP</div>
+                    <h3>Опыт игрока</h3>
+                    <p class="muted">Начисляется сразу после завершения маршрута.</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-points">+@Model.CoinsReward</div>
+                    <h3>Городские монеты</h3>
+                    <p class="muted">Их можно использовать для бонусов и будущих наград.</p>
+                </div>
                 @foreach (var reward in Model.Rewards)
                 {
                     <div class="reward-card">
@@ -102,3 +151,12 @@
         </div>
     </div>
 </section>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="~/js/quest-maps.js" asp-append-version="true"></script>
+}

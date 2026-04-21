@@ -1,0 +1,51 @@
+@model QazaqQuest.ViewModels.LeaderboardViewModel
+@{
+    ViewData["Title"] = "Рейтинг";
+}
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Соревнование игроков</div>
+            <h1>Лидерборд Qazaq Quest</h1>
+            <p class="muted">Рейтинг считает опыт, монеты и число завершённых маршрутов.</p>
+        </div>
+        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">К квестам</a>
+    </div>
+
+    @if (Model.CurrentUser != null)
+    {
+        <div class="panel" style="margin-bottom:20px;">
+            <div class="section-head compact"><h2>Твоя позиция</h2><span class="pill">#@Model.CurrentUserPosition</span></div>
+            <div class="info-grid">
+                <div><span class="meta-label">Игрок</span><strong>@Model.CurrentUser.Name</strong></div>
+                <div><span class="meta-label">Уровень</span><strong>@Model.CurrentUser.Level</strong></div>
+                <div><span class="meta-label">Опыт</span><strong>@Model.CurrentUser.ExperiencePoints XP</strong></div>
+                <div><span class="meta-label">Монеты</span><strong>@Model.CurrentUser.Coins</strong></div>
+            </div>
+        </div>
+    }
+
+    <div class="panel admin-panel-block">
+        <div class="table-scroll">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>#</th><th>Игрок</th><th>Уровень</th><th>XP</th><th>Монеты</th><th>Достижения</th></tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < Model.TopUsers.Count; i++)
+                {
+                    var user = Model.TopUsers[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@user.Name</td>
+                        <td>@user.Level</td>
+                        <td>@user.ExperiencePoints</td>
+                        <td>@user.Coins</td>
+                        <td>@user.Achievements.Count</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

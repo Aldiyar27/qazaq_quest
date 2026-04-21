@@ -20,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<AppDataService>();
 builder.Services.AddScoped<UserStoreService>();
+builder.Services.AddScoped<GameService>();
 
 var app = builder.Build();
 
