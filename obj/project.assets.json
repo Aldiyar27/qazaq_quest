@@ -721,19 +721,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< HEAD
       "projectUniqueName": "/Users/aldiyar/qazaq_ad_2/qazaq_quest.csproj",
       "projectName": "qazaq_quest",
       "projectPath": "/Users/aldiyar/qazaq_ad_2/qazaq_quest.csproj",
       "packagesPath": "/Users/aldiyar/.nuget/packages/",
       "outputPath": "/Users/aldiyar/qazaq_ad_2/obj/",
-=======
-      "projectUniqueName": "/Users/aldiyar/qazaq_ad/qazaq_quest.csproj",
-      "projectName": "qazaq_quest",
-      "projectPath": "/Users/aldiyar/qazaq_ad/qazaq_quest.csproj",
-      "packagesPath": "/Users/aldiyar/.nuget/packages/",
-      "outputPath": "/Users/aldiyar/qazaq_ad/obj/",
->>>>>>> 7f76bfbcf884fd6c8f651a553952a46c9c0179b5
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/aldiyar/.nuget/NuGet/NuGet.Config"
