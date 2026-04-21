@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "teEXjV0cqb4=",
+  "dgSpecHash": "Lqfo4sphcXo=",
   "success": true,
-  "projectFilePath": "/Users/aldiyar/qazaq_ad_2/qazaq_quest.csproj",
+  "projectFilePath": "/Users/aldiyar/qazaq_ad/qazaq_quest.csproj",
   "expectedPackageFiles": [
     "/Users/aldiyar/.nuget/packages/microsoft.entityframeworkcore/8.0.8/microsoft.entityframeworkcore.8.0.8.nupkg.sha512",
     "/Users/aldiyar/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.8/microsoft.entityframeworkcore.abstractions.8.0.8.nupkg.sha512",
