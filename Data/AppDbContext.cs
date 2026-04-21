@@ -14,11 +14,14 @@ public class AppDbContext : DbContext
     public DbSet<Reward> Rewards => Set<Reward>();
     public DbSet<UserQuestProgress> UserQuestProgresses => Set<UserQuestProgress>();
     public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
+<<<<<<< HEAD
     public DbSet<DailyChallenge> DailyChallenges => Set<DailyChallenge>();
     public DbSet<DailyChallengeProgress> DailyChallengeProgresses => Set<DailyChallengeProgress>();
     public DbSet<Friendship> Friendships => Set<Friendship>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<QuestReview> QuestReviews => Set<QuestReview>();
+=======
+>>>>>>> 7f76bfbcf884fd6c8f651a553952a46c9c0179b5
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -117,6 +120,7 @@ public class AppDbContext : DbContext
             entity.HasIndex(x => new { x.UserId, x.Code }).IsUnique();
             entity.HasOne(x => x.User).WithMany(x => x.Achievements).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
+<<<<<<< HEAD
 
 
         modelBuilder.Entity<DailyChallenge>(entity =>
@@ -165,5 +169,7 @@ public class AppDbContext : DbContext
             entity.HasOne(x => x.User).WithMany(x => x.QuestReviews).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(x => x.Quest).WithMany().HasForeignKey(x => x.QuestId).OnDelete(DeleteBehavior.Cascade);
         });
+=======
+>>>>>>> 7f76bfbcf884fd6c8f651a553952a46c9c0179b5
     }
 }
