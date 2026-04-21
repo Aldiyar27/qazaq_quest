@@ -1,0 +1,63 @@
+@model QazaqQuest.ViewModels.DailyChallengeIndexViewModel
+@using QazaqQuest.Models
+@{
+    ViewData["Title"] = "Ежедневные задания";
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Ежедневная активность</div>
+            <h1>Ежедневные задания</h1>
+            <p class="muted">Каждый день игрок получает набор активностей с отдельной наградой в XP и монетах.</p>
+        </div>
+        <div class="inline-pills">
+            <span class="pill">@Model.CurrentUser.Name</span>
+            <span class="pill">Уровень @Model.CurrentUser.Level</span>
+            <span class="pill">@DateTime.UtcNow.ToLocalTime().ToString("dd.MM.yyyy")</span>
+        </div>
+    </div>
+
+    <div class="quest-grid social-grid">
+        @foreach (var challenge in Model.Challenges)
+        {
+            var hasProgress = Model.ProgressByChallengeId.TryGetValue(challenge.Id, out DailyChallengeProgress? progress);
+            var current = hasProgress ? progress!.CurrentValue : 0;
+            var completed = hasProgress && progress!.IsCompleted;
+            var claimed = hasProgress && progress!.IsRewardClaimed;
+            <article class="panel quest-card social-card">
+                <div class="inline-pills">
+                    <span class="pill">@challenge.ChallengeType</span>
+                    <span class="pill">Цель: @challenge.TargetValue</span>
+                </div>
+                <h2>@challenge.Title</h2>
+                <p class="muted">@challenge.Description</p>
+                <div class="progress-block">
+                    <div class="progress-meta"><strong>@current / @challenge.TargetValue</strong><span>@(completed ? "Выполнено" : "В процессе")</span></div>
+                    <div class="progress-bar"><span style="width:@(Math.Min(100, challenge.TargetValue == 0 ? 0 : (current * 100 / challenge.TargetValue)))%"></span></div>
+                </div>
+                <div class="inline-pills">
+                    <span class="pill">+@challenge.ExperienceReward XP</span>
+                    <span class="pill">+@challenge.CoinsReward монет</span>
+                </div>
+                <div class="card-actions spaced">
+                    @if (completed && !claimed)
+                    {
+                        <form method="post" asp-action="Claim">
+                            <input type="hidden" name="id" value="@challenge.Id" />
+                            <button type="submit" class="btn btn-primary">Забрать награду</button>
+                        </form>
+                    }
+                    else if (claimed)
+                    {
+                        <span class="registration-ok">Награда уже получена</span>
+                    }
+                    else
+                    {
+                        <span class="registration-note">Выполни условие задания, чтобы открыть награду</span>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</section>

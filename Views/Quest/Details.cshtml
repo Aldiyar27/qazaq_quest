@@ -1,0 +1,224 @@
+@model QazaqQuest.Models.Quest
+@using System.Text.Json
+@{
+    ViewData["Title"] = Model.Title;
+    var isRegistered = ViewBag.IsRegistered is bool registered && registered;
+    var canAccess = ViewBag.CanAccessQuest is bool access && access;
+    var currentLevel = ViewBag.CurrentLevel is int level ? level : 0;
+    var routeUrl = ViewBag.RouteUrl as string ?? string.Empty;
+    var routeMapId = $"quest-route-data-{Model.Id}";
+    var reviews = (ViewBag.Reviews as List<QazaqQuest.Models.QuestReview>) ?? new List<QazaqQuest.Models.QuestReview>();
+    var averageRating = ViewBag.AverageRating is double avg ? avg : 0;
+    var canReview = ViewBag.CanReview is bool canWrite && canWrite;
+    var routePoints = Model.Points
+        .OrderBy(p => p.Order)
+        .Select(p => new
+        {
+            id = p.Id,
+            order = p.Order,
+            name = p.Name,
+            address = string.IsNullOrWhiteSpace(p.Location?.Address) ? p.Name : p.Location!.Address,
+            latitude = p.Latitude,
+            longitude = p.Longitude,
+            radiusMeters = p.RadiusMeters
+        })
+        .ToList();
+}
+
+<section class="container section-space">
+    <div class="details-cover details-cover-photo" style="background:@Model.CoverStyle">
+        <img class="details-photo" src="@Model.ImageUrl" alt="@Model.Title">
+        <div class="details-photo-overlay"></div>
+        <div class="details-cover-content">
+            <div class="eyebrow eyebrow-light">@Model.City · @Model.Category</div>
+            <h1>@Model.Title</h1>
+            <p>@Model.Description</p>
+            <div class="inline-pills">
+                <span class="pill pill-light">@Model.Difficulty</span>
+                <span class="pill pill-light">@Model.Type</span>
+                <span class="pill pill-light">@Model.RouteLength</span>
+                <span class="pill pill-light">@Model.Duration</span>
+                @if (Model.IsTimed) { <span class="pill pill-light">⏱ @Model.TimeLimitMinutes мин</span> }
+                @if (Model.IsCoop) { <span class="pill pill-light">👥 Кооп</span> }
+                @if (Model.IsHidden) { <span class="pill pill-light">🔒 Скрытый</span> }
+            </div>
+        </div>
+        <div class="details-icon">@Model.Icon</div>
+    </div>
+
+    <div class="details-grid">
+        <div class="panel">
+            <div class="section-head compact compact-mobile">
+                <h2>Карточка квеста</h2>
+                <span class="price-tag">@(Model.Price == 0 ? "Бесплатно" : $"{Model.Price} ₸")</span>
+            </div>
+
+            <div class="info-grid">
+                <div><span class="meta-label">Город</span><strong>@Model.City</strong></div>
+                <div><span class="meta-label">Языки</span><strong>@Model.Language</strong></div>
+                <div><span class="meta-label">Аудитория</span><strong>@Model.Audience</strong></div>
+                <div><span class="meta-label">Партнёр</span><strong>@Model.Partner</strong></div>
+                <div><span class="meta-label">Бонус</span><strong>@Model.Bonus</strong></div>
+                <div><span class="meta-label">Количество точек</span><strong>@Model.Points.Count</strong></div>
+                <div><span class="meta-label">Требуемый уровень</span><strong>@Model.UnlockLevel</strong></div>
+                <div><span class="meta-label">Награда</span><strong>@Model.ExperienceReward XP · @Model.CoinsReward монет</strong></div>
+            </div>
+
+            <div class="action-banner">
+                @if (!isRegistered)
+                {
+                    <div class="registration-warning">🔐 Участвовать в квесте можно только после регистрации.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Зарегистрироваться</a>
+                        <a class="btn btn-ghost" asp-controller="Auth" asp-action="Login">У меня уже есть аккаунт</a>
+                    </div>
+                }
+                else if (!canAccess)
+                {
+                    <div class="registration-warning">🔒 Сейчас маршрут недоступен. Нужен уровень @Model.UnlockLevel, у тебя уровень @currentLevel.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Index">Выбрать другой квест</a>
+                        <a class="btn btn-ghost" asp-controller="Profile" asp-action="Index">Открыть профиль</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="registration-ok">✅ Аккаунт найден — можно начинать маршрут.</div>
+                    <div class="card-actions spaced">
+                        <a class="btn btn-primary" asp-controller="Quest" asp-action="Start" asp-route-id="@Model.Id">Начать квест</a>
+                        <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">Назад в каталог</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="panel quest-map-shell">
+            <h2>Интерактивная карта маршрута</h2>
+            <div class="quest-map large" data-quest-map data-json-id="@routeMapId"></div>
+            <script id="@routeMapId" type="application/json">@Html.Raw(JsonSerializer.Serialize(routePoints))</script>
+            <div class="map-summary">
+                <div class="map-summary-card"><strong>@Model.Points.Count точек</strong><span>Все шаги маршрута уже связаны в единую линию на карте.</span></div>
+                <div class="map-summary-card"><strong>@Model.RouteLength</strong><span>Протяжённость маршрута для прогулки по городу.</span></div>
+                <div class="map-summary-card"><strong>@Model.Duration</strong><span>Среднее время прохождения с заданиями и остановками.</span></div>
+            </div>
+            <div class="quest-map-note">
+                <span>На карте показаны все точки квеста по порядку.</span>
+                @if (!string.IsNullOrWhiteSpace(routeUrl))
+                {
+                    <a class="btn btn-ghost" href="@routeUrl" target="_blank" rel="noopener noreferrer">Открыть маршрут во внешней карте</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Маршрут по шагам</h2>
+            <div class="route-preview-list">
+                @foreach (var point in Model.Points.OrderBy(p => p.Order))
+                {
+                    <div class="route-preview-item">
+                        <div class="route-preview-order">@point.Order</div>
+                        <div>
+                            <strong>@point.Name</strong>
+                            <div class="muted">@point.TaskType · радиус @point.RadiusMeters м</div>
+                            <div class="route-hint">@point.Task</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Награды маршрута</h2>
+            <div class="reward-grid reward-grid-single">
+                <div class="reward-card">
+                    <div class="reward-points">+@Model.ExperienceReward XP</div>
+                    <h3>Опыт игрока</h3>
+                    <p class="muted">Начисляется сразу после завершения маршрута.</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-points">+@Model.CoinsReward</div>
+                    <h3>Городские монеты</h3>
+                    <p class="muted">Их можно использовать для бонусов и будущих наград.</p>
+                </div>
+                @foreach (var reward in Model.Rewards)
+                {
+                    <div class="reward-card">
+                        <div class="reward-points">+@reward.Points</div>
+                        <h3>@reward.Title</h3>
+                        <p class="muted">@reward.Description</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <div class="section-head compact compact-mobile">
+                <div>
+                    <h2>Отзывы и оценки</h2>
+                    <p class="muted">Средняя оценка маршрута: <strong>@averageRating.ToString("0.0") / 5</strong> · отзывов: @reviews.Count</p>
+                </div>
+                <span class="pill">⭐ @averageRating.ToString("0.0")</span>
+            </div>
+
+            @if (canReview)
+            {
+                <form method="post" asp-action="Review" class="answer-form">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="field">
+                        <label>Оценка</label>
+                        <select name="rating" required>
+                            <option value="">Выбери оценку</option>
+                            <option value="5">5 — отлично</option>
+                            <option value="4">4 — очень хорошо</option>
+                            <option value="3">3 — нормально</option>
+                            <option value="2">2 — слабо</option>
+                            <option value="1">1 — плохо</option>
+                        </select>
+                    </div>
+                    <textarea name="comment" rows="4" placeholder="Что понравилось, что стоит улучшить, какие задания были самыми интересными" required></textarea>
+                    <button type="submit" class="btn btn-primary">Сохранить отзыв</button>
+                </form>
+            }
+            else
+            {
+                <div class="registration-note">Оставлять отзыв могут только игроки, которые полностью завершили этот квест.</div>
+            }
+        </div>
+
+        <div class="panel">
+            <h2>Что пишут игроки</h2>
+            @if (reviews.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var review in reviews)
+                    {
+                        <div class="completed-item review-item">
+                            <strong>@review.User?.Name</strong>
+                            <div class="muted">Оценка: @review.Rating / 5 · @review.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                            <div>@review.Comment</div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">⭐</div><h3>Пока нет отзывов</h3><p class="muted">Стань первым игроком, который оценит этот маршрут после прохождения.</p></div>
+            }
+        </div>
+    </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="~/js/quest-maps.js" asp-append-version="true"></script>
+}

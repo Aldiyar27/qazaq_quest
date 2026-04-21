@@ -1,0 +1,135 @@
+@model QazaqQuest.ViewModels.SocialHubViewModel
+@using QazaqQuest.Models
+@{
+    ViewData["Title"] = "Друзья и чат";
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Социальный центр</div>
+            <h1>Друзья и чат</h1>
+            <p class="muted">Добавляй игроков, принимай заявки и общайся в личном чате после подтверждения дружбы.</p>
+        </div>
+        <div class="inline-pills">
+            <span class="pill">Друзей: @Model.Friends.Count</span>
+            <span class="pill">Входящих: @Model.IncomingRequests.Count</span>
+            <span class="pill">Исходящих: @Model.OutgoingRequests.Count</span>
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Рекомендованные игроки</h2>
+            @if (Model.SuggestedUsers.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var user in Model.SuggestedUsers)
+                    {
+                        <div class="completed-item social-line">
+                            <div>
+                                <strong>@user.Name</strong>
+                                <div class="muted">Уровень @user.Level · @user.ExperiencePoints XP</div>
+                            </div>
+                            <form method="post" asp-action="AddFriend">
+                                <input type="hidden" name="userId" value="@user.Id" />
+                                <button class="btn btn-ghost" type="submit">Добавить</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">🤝</div><h3>Нет новых рекомендаций</h3><p class="muted">Ты уже добавил доступных игроков или пока мало зарегистрированных пользователей.</p></div>
+            }
+        </div>
+
+        <div class="panel">
+            <h2>Входящие заявки</h2>
+            @if (Model.IncomingRequests.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var request in Model.IncomingRequests)
+                    {
+                        <div class="completed-item social-line">
+                            <div>
+                                <strong>@request.Requester?.Name</strong>
+                                <div class="muted">Отправлена @request.CreatedAtUtc.ToLocalTime().ToString("dd.MM HH:mm")</div>
+                            </div>
+                            <div class="card-actions">
+                                <form method="post" asp-action="Accept"><input type="hidden" name="id" value="@request.Id" /><button class="btn btn-primary" type="submit">Принять</button></form>
+                                <form method="post" asp-action="Decline"><input type="hidden" name="id" value="@request.Id" /><button class="btn btn-ghost" type="submit">Отклонить</button></form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">📭</div><h3>Нет входящих заявок</h3><p class="muted">Когда другие игроки добавят тебя, заявки появятся здесь.</p></div>
+            }
+        </div>
+    </div>
+
+    <div class="details-grid lower">
+        <div class="panel">
+            <h2>Мои друзья</h2>
+            @if (Model.Friends.Any())
+            {
+                <div class="completed-list">
+                    @foreach (var friendship in Model.Friends)
+                    {
+                        var friend = friendship.RequesterId == Model.CurrentUser.Id ? friendship.Addressee : friendship.Requester;
+                        <div class="completed-item social-line">
+                            <div>
+                                <strong>@friend?.Name</strong>
+                                <div class="muted">Уровень @friend?.Level · @friend?.Coins монет</div>
+                            </div>
+                            <a class="btn btn-ghost" asp-action="Index" asp-route-friendId="@friend?.Id">Открыть чат</a>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">👥</div><h3>Друзей пока нет</h3><p class="muted">Добавь игроков из рекомендованного списка, чтобы открыть личный чат.</p></div>
+            }
+        </div>
+
+        <div class="panel">
+            <h2>Чат</h2>
+            @if (Model.SelectedFriend != null)
+            {
+                <div class="chat-header"><strong>@Model.SelectedFriend.Name</strong><span class="muted">Личный диалог</span></div>
+                <div class="chat-box">
+                    @if (Model.Messages.Any())
+                    {
+                        @foreach (var message in Model.Messages)
+                        {
+                            var own = message.SenderId == Model.CurrentUser.Id;
+                            <div class="chat-message @(own ? "own" : "other")">
+                                <strong>@(own ? "Вы" : message.Sender?.Name)</strong>
+                                <p>@message.MessageText</p>
+                                <span>@message.SentAtUtc.ToLocalTime().ToString("dd.MM HH:mm")</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state compact-empty"><div class="empty-icon">💬</div><h3>Сообщений пока нет</h3><p class="muted">Напиши первым и начни общение внутри платформы.</p></div>
+                    }
+                </div>
+                <form method="post" asp-action="SendMessage" class="answer-form">
+                    <input type="hidden" name="recipientId" value="@Model.SelectedFriend.Id" />
+                    <textarea name="messageText" rows="4" placeholder="Напиши сообщение другу" required></textarea>
+                    <button class="btn btn-primary" type="submit">Отправить</button>
+                </form>
+            }
+            else
+            {
+                <div class="empty-state compact-empty"><div class="empty-icon">🗨️</div><h3>Выбери друга</h3><p class="muted">Открой диалог с любым подтверждённым другом, чтобы начать переписку.</p></div>
+            }
+        </div>
+    </div>
+</section>

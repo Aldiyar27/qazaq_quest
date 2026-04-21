@@ -1,0 +1,100 @@
+@{
+    var userName = Context.Session.GetString("UserName") ?? "Гость";
+    var userRole = Context.Session.GetString("UserRole") ?? "Guest";
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Qazaq Quest";
+    var isGuest = string.Equals(userRole, "Guest", StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Qazaq Quest — городские квесты по Астане: красивые маршруты, задания, призы и удобное прохождение.">
+    <title>@pageTitle · Qazaq Quest</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="page-shell next-theme-shell">
+        <header class="next-header">
+            <div class="container next-nav-row">
+                <a class="next-brand" asp-controller="Home" asp-action="Index">
+                    <span class="next-brand-mark">QQ</span>
+                    <span class="next-brand-text">Qazaq Quest</span>
+                </a>
+
+                <button class="mobile-nav-toggle" type="button" aria-label="Открыть меню" data-mobile-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <nav class="next-nav" data-mobile-nav>
+                    <a asp-controller="Home" asp-action="Index">Главная</a>
+                    <a asp-controller="Quest" asp-action="Index">Квесты</a>
+                    <a asp-controller="Daily" asp-action="Index">Ежедневные</a>
+                    <a asp-controller="Social" asp-action="Index">Друзья и чат</a>
+                    <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    <a asp-controller="Leaderboard" asp-action="Index">Рейтинг</a>
+                    @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-controller="Admin" asp-action="Index">Admin</a>
+                    }
+                </nav>
+
+                <div class="next-nav-actions">
+                    @if (isGuest)
+                    {
+                        <a class="btn btn-ghost compact" asp-controller="Auth" asp-action="Login">Войти</a>
+                        <a class="btn btn-primary compact" asp-controller="Auth" asp-action="Register">Начать приключение</a>
+                    }
+                    else
+                    {
+                        <div class="next-user-pill">
+                            <span class="user-name">@userName</span>
+                            <span class="role-badge">@userRole</span>
+                        </div>
+                        <a class="btn btn-ghost compact" asp-controller="Auth" asp-action="Logout">Выйти</a>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <main class="page-content next-page-content">
+            @await Html.PartialAsync("_Alerts")
+            @RenderBody()
+        </main>
+
+        <footer class="next-footer" id="contact">
+            <div class="container next-footer-grid">
+                <div>
+                    <div class="next-footer-title">Qazaq Quest</div>
+                    <p>Игровые маршруты по Астане с красивой подачей, понятной навигацией и городскими впечатлениями.</p>
+                </div>
+                <div>
+                    <div class="next-footer-caption">Навигация</div>
+                    <div class="next-footer-links">
+                        <a asp-controller="Home" asp-action="Index">Главная</a>
+                        <a asp-controller="Quest" asp-action="Index">Каталог квестов</a>
+                        <a asp-controller="Daily" asp-action="Index">Ежедневные задания</a>
+                        <a asp-controller="Social" asp-action="Index">Друзья и чат</a>
+                        <a asp-controller="Profile" asp-action="Index">Профиль</a>
+                    <a asp-controller="Leaderboard" asp-action="Index">Рейтинг</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="next-footer-caption">Что внутри</div>
+                    <div class="next-footer-links next-footer-stack">
+                        <span>городские квесты</span>
+                        <span>регистрация и профиль</span>
+                        <span>маршруты, задания и награды</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

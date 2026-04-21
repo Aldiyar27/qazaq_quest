@@ -1,0 +1,107 @@
+@model QazaqQuest.ViewModels.AdminQuestFormViewModel
+@{
+    ViewData["Title"] = Model.Quest.Id == 0 ? "Новый квест" : "Редактирование квеста";
+}
+
+<section class="container section-space">
+    <div class="section-head">
+        <div>
+            <div class="eyebrow">Админ-панель</div>
+            <h1>@ViewData["Title"]</h1>
+            <p class="muted">Дизайн пользовательской части не меняется. Здесь редактируется только содержимое из БД.</p>
+        </div>
+    </div>
+
+    <form method="post" asp-action="SaveQuest" class="panel" style="display:grid; gap:24px;">
+        <input type="hidden" asp-for="Quest.Id" />
+
+        <div>
+            <h2>Основная информация</h2>
+            <div class="filter-grid">
+                <div class="field field-wide"><label>Название</label><input asp-for="Quest.Title" /></div>
+                <div class="field field-wide"><label>Описание</label><textarea asp-for="Quest.Description" rows="4"></textarea></div>
+                <div class="field"><label>Город</label><input asp-for="Quest.City" /></div>
+                <div class="field"><label>Сложность</label><input asp-for="Quest.Difficulty" /></div>
+                <div class="field"><label>Тип</label><input asp-for="Quest.Type" /></div>
+                <div class="field"><label>Цена</label><input asp-for="Quest.Price" type="number" step="0.01" /></div>
+                <div class="field"><label>Длительность</label><input asp-for="Quest.Duration" /></div>
+                <div class="field"><label>Длина маршрута</label><input asp-for="Quest.RouteLength" /></div>
+                <div class="field"><label>Категория</label><input asp-for="Quest.Category" /></div>
+                <div class="field"><label>Аудитория</label><input asp-for="Quest.Audience" /></div>
+                <div class="field"><label>Изображение</label><input asp-for="Quest.ImageUrl" /></div>
+                <div class="field"><label>Фон</label><input asp-for="Quest.CoverStyle" /></div>
+                <div class="field"><label>Иконка</label><input asp-for="Quest.Icon" /></div>
+                <div class="field"><label>Язык</label><input asp-for="Quest.Language" /></div>
+                <div class="field"><label>Партнёр</label><input asp-for="Quest.Partner" /></div>
+                <div class="field"><label>Бонус</label><input asp-for="Quest.Bonus" /></div>
+                <div class="field"><label>Уровень открытия</label><input asp-for="Quest.UnlockLevel" type="number" min="1" /></div>
+                <div class="field"><label>XP за финиш</label><input asp-for="Quest.ExperienceReward" type="number" min="0" /></div>
+                <div class="field"><label>Монеты за финиш</label><input asp-for="Quest.CoinsReward" type="number" min="0" /></div>
+                <div class="field"><label>Лимит времени, мин</label><input asp-for="Quest.TimeLimitMinutes" type="number" min="0" /></div>
+                <div class="field"><label><input asp-for="Quest.IsHidden" type="checkbox" /> Скрытый квест</label></div>
+                <div class="field"><label><input asp-for="Quest.IsTimed" type="checkbox" /> Квест на время</label></div>
+                <div class="field"><label><input asp-for="Quest.IsCoop" type="checkbox" /> Кооператив</label></div>
+                <div class="field"><label><input asp-for="Quest.IsFeatured" type="checkbox" /> Показывать на главной</label></div>
+            </div>
+        </div>
+
+        <div>
+            <h2>Локации</h2>
+            <p class="muted">Сначала заполни локации, потом в заданиях укажи номер локации: 1, 2, 3 и т.д.</p>
+            @for (int i = 0; i < Model.Locations.Count; i++)
+            {
+                <div class="panel" style="margin-top:16px;">
+                    <h3>Локация @(i + 1)</h3>
+                    <div class="filter-grid">
+                        <div class="field"><label>Название</label><input asp-for="Locations[i].Name" /></div>
+                        <div class="field field-wide"><label>Адрес</label><input asp-for="Locations[i].Address" /></div>
+                        <div class="field"><label>Широта</label><input asp-for="Locations[i].Latitude" type="number" step="0.000001" /></div>
+                        <div class="field"><label>Долгота</label><input asp-for="Locations[i].Longitude" type="number" step="0.000001" /></div>
+                        <div class="field"><label>Радиус</label><input asp-for="Locations[i].RadiusMeters" type="number" /></div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div>
+            <h2>Задания</h2>
+            @for (int i = 0; i < Model.Points.Count; i++)
+            {
+                <div class="panel" style="margin-top:16px;">
+                    <h3>Задание @(i + 1)</h3>
+                    <div class="filter-grid">
+                        <input type="hidden" asp-for="Points[i].Id" />
+                        <div class="field"><label>Порядок</label><input asp-for="Points[i].Order" type="number" /></div>
+                        <div class="field"><label>Название точки</label><input asp-for="Points[i].Name" /></div>
+                        <div class="field"><label>Тип задания</label><input asp-for="Points[i].TaskType" /></div>
+                        <div class="field"><label>Номер локации</label><input asp-for="Points[i].QuestLocationId" type="number" min="1" max="@Model.Locations.Count" /></div>
+                        <div class="field field-wide"><label>Текст задания</label><textarea asp-for="Points[i].Task" rows="3"></textarea></div>
+                        <div class="field"><label>Ответ</label><input asp-for="Points[i].Answer" /></div>
+                        <div class="field field-wide"><label>Подсказка</label><input asp-for="Points[i].Hint" /></div>
+                        <div class="field field-wide"><label>Варианты ответа через ||</label><input asp-for="Points[i].OptionsSerialized" placeholder="вариант 1||вариант 2||вариант 3" /></div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div>
+            <h2>Награды</h2>
+            @for (int i = 0; i < Model.Rewards.Count; i++)
+            {
+                <div class="panel" style="margin-top:16px;">
+                    <h3>Награда @(i + 1)</h3>
+                    <div class="filter-grid">
+                        <div class="field"><label>Название</label><input asp-for="Rewards[i].Title" /></div>
+                        <div class="field field-wide"><label>Описание</label><input asp-for="Rewards[i].Description" /></div>
+                        <div class="field"><label>Очки</label><input asp-for="Rewards[i].Points" type="number" /></div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="card-actions">
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+            <a class="btn btn-ghost" asp-action="Index">Назад</a>
+        </div>
+    </form>
+</section>
