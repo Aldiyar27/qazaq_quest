@@ -29,7 +29,14 @@
                 <div class="inline-pills">
                     <span class="pill">@Model.Role</span>
                     <span class="pill">Уровень @Model.Level</span>
-                    <span class="pill">Место #@Model.RankPosition</span>
+                    @if (ViewBag.RankHidden == true)
+                    {
+                        <span class="pill">Рейтинг скрыт</span>
+                    }
+                    else
+                    {
+                        <span class="pill">Место #@Model.RankPosition</span>
+                    }
                     <span class="pill">@ViewBag.CityCount локаций Астаны</span>
                     <span class="pill">@ViewBag.AvailableQuestCount квестов</span>
                 </div>

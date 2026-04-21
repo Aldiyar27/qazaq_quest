@@ -16,11 +16,16 @@ public class LeaderboardController : Controller
     public IActionResult Index()
     {
         var currentUser = _gameService.GetCurrentUser(HttpContext);
+        var visibleCurrentUser = currentUser != null && !string.Equals(currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase)
+            ? currentUser
+            : null;
+
         var model = new LeaderboardViewModel
         {
             TopUsers = _gameService.GetLeaderboard().Take(15).ToList(),
-            CurrentUser = currentUser,
-            CurrentUserPosition = currentUser == null ? 0 : _gameService.GetUserRank(currentUser.Id)
+            CurrentUser = visibleCurrentUser,
+            CurrentUserPosition = visibleCurrentUser == null ? 0 : _gameService.GetUserRank(visibleCurrentUser.Id),
+            IsCurrentUserHiddenFromLeaderboard = currentUser != null && string.Equals(currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase)
         };
 
         return View(model);

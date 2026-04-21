@@ -33,6 +33,7 @@ public class ProfileController : Controller
 
         var completedProgresses = currentUser.QuestProgresses.Where(x => x.IsCompleted).ToList();
         var completedQuests = allQuests.Where(q => completedProgresses.Any(p => p.QuestId == q.Id)).ToList();
+        var isAdmin = string.Equals(currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase);
         var model = new UserProfile
         {
             Name = currentUser.Name,
@@ -46,9 +47,10 @@ public class ProfileController : Controller
             ExperiencePoints = currentUser.ExperiencePoints,
             Coins = currentUser.Coins,
             Level = currentUser.Level,
-            RankPosition = _gameService.GetUserRank(currentUser.Id)
+            RankPosition = isAdmin ? 0 : _gameService.GetUserRank(currentUser.Id)
         };
 
+        ViewBag.RankHidden = isAdmin;
         ViewBag.CompletedQuestTitles = completedQuests.Select(q => q.Title).ToList();
         ViewBag.AchievementsList = currentUser.Achievements.OrderByDescending(x => x.UnlockedAtUtc).ToList();
         ViewBag.InProgress = currentUser.QuestProgresses.Where(x => !x.IsCompleted)

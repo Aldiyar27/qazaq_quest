@@ -15,10 +15,13 @@ public class AppDataService
 
     public void EnsureSeedData()
     {
-        if (_dbContext.Quests.Any())
-            return;
+        var existingTitles = _dbContext.Quests.Select(q => q.Title).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var seededQuests = SeedQuests()
+            .Where(q => !existingTitles.Contains(q.Title))
+            .ToList();
 
-        var seededQuests = SeedQuests();
+        if (!seededQuests.Any())
+            return;
 
         foreach (var quest in seededQuests)
         {
@@ -283,6 +286,49 @@ private static List<Quest> SeedQuests()
                     new() { Id = 9002, Title = "Знаю бариста", Description = "Успешно прошёл задание с именем бариста Руслан.", Points = 20 }
                 }
             },
+            new()
+            {
+                Id = 10,
+                Title = "Шифр старого города",
+                Description = "Хардкорный маршрут для тех, кто любит не просто гулять, а ломать голову: шифр Цезаря, анаграммы, акростихи и многошаговые подсказки.",
+                City = "Астана", Difficulty = "Сложный", Type = "Платный", Price = 3490, Duration = "80–105 минут", RouteLength = "3.4 км",
+                Category = "Шифры и логика", Audience = "Опытные игроки, пары, команды", ImageUrl = "/photo/quest-expo.svg",
+                CoverStyle = "linear-gradient(135deg, #111827 0%, #4f46e5 100%)", Icon = "🧩", Partner = "Puzzle Point", Bonus = "Секретный бейдж Cipher Master", IsTimed = true, TimeLimitMinutes = 95, UnlockLevel = 2, ExperienceReward = 220, CoinsReward = 70,
+                Points = new List<QuestPoint>
+                {
+                    new() { Id = 1001, Order = 1, Name = "Стартовый обелиск", TaskType = "Шифр Цезаря", Task = "На табличке ты видишь слово «ДУВЩБОБ». Это слово зашифровано сдвигом на 1 букву вперёд по русскому алфавиту. Сдвинь каждую букву на 1 назад и введи ответ без пробелов.", Answer = "астана", Hint = "Пример: Б → А, Е → Д. Разгадай всё слово целиком.", Latitude = 51.1321, Longitude = 71.4205, RadiusMeters = 150 },
+                    new() { Id = 1002, Order = 2, Name = "Каменная арка", TaskType = "Анаграмма", Task = "Собери слово из букв «К Е Р Т А Й Б». Это символ столицы и одна из самых узнаваемых точек города. Введи ответ слитно.", Answer = "байтерек", Hint = "Семь букв складываются в название монумента.", Latitude = 51.1314, Longitude = 71.4233, RadiusMeters = 150 },
+                    new() { Id = 1003, Order = 3, Name = "Переход с колоннами", TaskType = "Акростих", Task = "Возьми первые буквы строк и собери слово:\nБлиже к небу тянется силуэт\nА внизу шумит город\nЙодовый блеск стекла ловит солнце\nТочка маршрута уже рядом\nЕщё шаг — и увидишь подсказку\nРешение всегда в начале строк\nЕдинственный верный ответ введи слитно\nКакое слово получилось?", Answer = "байтерек", Hint = "Смотри только на первые буквы каждой строки.", Latitude = 51.1307, Longitude = 71.4257, RadiusMeters = 160 },
+                    new() { Id = 1004, Order = 4, Name = "Финишная галерея", TaskType = "Логическая цепочка", Task = "Финальный код строится так: 1) возьми первое решение, 2) прибавь к нему второе, 3) убери повторяющиеся буквы, оставив только уникальные в порядке первого появления. Из слов «астана» и «байтерек» получится? Введи итоговое слово без пробелов.", Answer = "астнбайрек", Hint = "Иди слева направо: а-с-т-а-н-а-б-а-й-т-е-р-е-к → оставляй только первую встречу каждой буквы.", Latitude = 51.1299, Longitude = 71.4280, RadiusMeters = 170 }
+                },
+                Rewards = new List<Reward>
+                {
+                    new() { Id = 10001, Title = "Cipher Master", Description = "Разобрал цепочку шифров и дошёл до конца без сдачи.", Points = 160 },
+                    new() { Id = 10002, Title = "Ледяная логика", Description = "Прошёл один из самых сложных маршрутов проекта.", Points = 55 }
+                }
+            },
+            new()
+            {
+                Id = 11,
+                Title = "Операция: Красная нить",
+                Description = "Детективный квест по центру города: ребусы, зеркальные слова, числовые закономерности и финальный код из нескольких частей.",
+                City = "Астана", Difficulty = "Сложный", Type = "Платный", Price = 3990, Duration = "90–115 минут", RouteLength = "3.8 км",
+                Category = "Ребусы и расследование", Audience = "Команды, друзья, любители головоломок", ImageUrl = "/photo/quest-art.svg",
+                CoverStyle = "linear-gradient(135deg, #7f1d1d 0%, #1f2937 100%)", Icon = "🕵️", Partner = "Detective Cafe", Bonus = "Бонусный код и роль в сезонном рейтинге", IsCoop = true, IsFeatured = true, UnlockLevel = 3, ExperienceReward = 260, CoinsReward = 90,
+                Points = new List<QuestPoint>
+                {
+                    new() { Id = 1101, Order = 1, Name = "Красный конверт", TaskType = "Ребус", Task = "Разгадай текстовый ребус: «СФЕ + РА - А + А». Какое слово получится? Введи ответ слитно.", Answer = "сфера", Hint = "Из слова ничего не исчезает: ты снова приходишь к форме главного объекта EXPO.", Latitude = 51.0908, Longitude = 71.3980, RadiusMeters = 150 },
+                    new() { Id = 1102, Order = 2, Name = "Зеркальная витрина", TaskType = "Зеркальное слово", Task = "На стекле написано «НАРУ». Прочитай слово наоборот и введи ответ.", Answer = "уран", Hint = "Читай справа налево. Ответ связан с энергией и химическим элементом.", Latitude = 51.0920, Longitude = 71.4001, RadiusMeters = 150 },
+                    new() { Id = 1103, Order = 3, Name = "Лестница чисел", TaskType = "Числовая закономерность", Task = "Последовательность точек даёт код: 2, 4, 8, 16, ?. Найди следующее число и введи только число.", Answer = "32", Hint = "Каждый следующий элемент в 2 раза больше предыдущего.", Latitude = 51.0934, Longitude = 71.4022, RadiusMeters = 160 },
+                    new() { Id = 1104, Order = 4, Name = "Финальная нить", TaskType = "Составной код", Task = "Собери финальный пароль из первых букв трёх предыдущих ответов в том порядке, как ты их решал. Например, если ответы были «дом», «река», «1», код был бы «др1». Введи свой код.", Answer = "су3", Hint = "Используй первые символы: «сфера», «уран», «32». У числа тоже берётся первый символ.", Latitude = 51.0945, Longitude = 71.4040, RadiusMeters = 170 }
+                },
+                Rewards = new List<Reward>
+                {
+                    new() { Id = 11001, Title = "Red Thread", Description = "Собрал все улики и свёл расследование к одному коду.", Points = 180 },
+                    new() { Id = 11002, Title = "Детектив Астаны", Description = "Завершил кооперативный хард-квест по логике и ребусам.", Points = 60 }
+                }
+            },
+
             new()
             {
                 Id = 8,

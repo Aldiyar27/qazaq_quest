@@ -115,6 +115,7 @@ public class GameService
     public List<AppUser> GetLeaderboard() => _dbContext.Users
         .Include(x => x.QuestProgresses)
         .Include(x => x.Achievements)
+        .Where(a => a.Role.ToLower() != "admin")
         .OrderByDescending(x => x.ExperiencePoints)
         .ThenByDescending(x => x.Coins)
         .ThenByDescending(x => x.QuestProgresses.Count(q => q.IsCompleted))

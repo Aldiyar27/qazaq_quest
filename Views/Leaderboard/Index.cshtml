@@ -12,7 +12,14 @@
         <a class="btn btn-ghost" asp-controller="Quest" asp-action="Index">К квестам</a>
     </div>
 
-    @if (Model.CurrentUser != null)
+    @if (Model.IsCurrentUserHiddenFromLeaderboard)
+    {
+        <div class="panel" style="margin-bottom:20px;">
+            <div class="section-head compact"><h2>Твоя позиция</h2><span class="pill">Скрыто</span></div>
+            <p class="muted">Аккаунты с ролью Admin не участвуют в рейтинге и не отображаются в таблице лидеров.</p>
+        </div>
+    }
+    else if (Model.CurrentUser != null)
     {
         <div class="panel" style="margin-bottom:20px;">
             <div class="section-head compact"><h2>Твоя позиция</h2><span class="pill">#@Model.CurrentUserPosition</span></div>
