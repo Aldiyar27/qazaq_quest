@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("qazaq_quest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+262fe935f306f9f36ecffb5f897f88485f7a30cd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fc22eda61aa80fe22429f91770b4c7e7cda0ac2")]
 [assembly: System.Reflection.AssemblyProductAttribute("qazaq_quest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("qazaq_quest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
