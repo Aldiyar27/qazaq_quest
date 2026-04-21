@@ -65,15 +65,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
     dbContext.Database.EnsureCreated();
-    DatabaseInitializer.EnsureSchema(dbContext);
-
-    var dataService = scope.ServiceProvider.GetRequiredService<AppDataService>();
-    dataService.EnsureSeedData();
-
-    var socialService = scope.ServiceProvider.GetRequiredService<SocialService>();
-    socialService.EnsureSeedData();
 }
 
 if (!app.Environment.IsDevelopment())
