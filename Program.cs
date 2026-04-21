@@ -1,8 +1,28 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using QazaqQuest.Data;
 using QazaqQuest.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres://"))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+
+    connectionString = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = uri.AbsolutePath.Trim('/'),
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    }.ToString();
+}
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
@@ -16,7 +36,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<AppDataService>();
 builder.Services.AddScoped<UserStoreService>();
@@ -33,6 +53,7 @@ using (var scope = app.Services.CreateScope())
 
     var dataService = scope.ServiceProvider.GetRequiredService<AppDataService>();
     dataService.EnsureSeedData();
+
     var socialService = scope.ServiceProvider.GetRequiredService<SocialService>();
     socialService.EnsureSeedData();
 }
